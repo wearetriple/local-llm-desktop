@@ -1,0 +1,74 @@
+{
+  "name": "local-llm-desktop",
+  "version": "1.0.0",
+  "description": "An Electron application with React and TypeScript",
+  "main": "./out/main/index.js",
+  "author": "example.com",
+  "homepage": "https://electron-vite.org",
+  "scripts": {
+    "lint": "concurrently --kill-others-on-fail \"npm:lint:*\"",
+    "lint:prettier": "prettier --check --log-level=warn src",
+    "lint:tsc": "tsc --noEmit",
+    "lint:eslint": "eslint --ext=js,jsx,ts,tsx --max-warnings=0 src",
+    "format": "prettier --write src && eslint --ext=js,jsx,ts,tsx --fix src",
+    "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
+    "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "postinstall": "electron-builder install-app-deps",
+    "build:unpack": "npm run build && electron-builder --dir",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "electron-vite build && electron-builder --mac",
+    "build:linux": "electron-vite build && electron-builder --linux",
+    "prepare": "husky",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.(ts|tsx)": [
+      "eslint --max-warnings 0 --no-ignore",
+      "sh -c 'tsc -p tsconfig.json --noEmit'"
+    ],
+    "*.(js|cjs|mjs)": [
+      "eslint --max-warnings 0 --no-ignore"
+    ],
+    "*.(json|md)": [
+      "prettier --check --log-level=warn"
+    ]
+  },
+  "dependencies": {
+    "@electron-toolkit/preload": "^3.0.1",
+    "@electron-toolkit/utils": "^3.0.0",
+    "@mantine/core": "^7.15.3",
+    "@mantine/hooks": "^7.15.3",
+    "electron-updater": "^6.1.7",
+    "react-router-dom": "^7.1.1"
+  },
+  "devDependencies": {
+    "@electron-toolkit/eslint-config-prettier": "^2.0.0",
+    "@electron-toolkit/eslint-config-ts": "^2.0.0",
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@types/node": "^20.14.8",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^9.1.2",
+    "electron": "^31.0.2",
+    "electron-builder": "^24.13.3",
+    "electron-vite": "^2.3.0",
+    "eslint": "^8.57.0",
+    "eslint-config-triple-node": "^0.2.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-redos-detector": "^3.1.1",
+    "eslint-plugin-unicorn": "^56.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
+    "prettier": "^3.3.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1"
+  }
+}
