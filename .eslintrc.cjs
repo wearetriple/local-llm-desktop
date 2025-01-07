@@ -14,7 +14,11 @@ module.exports = {
     ecmaVersion: 2022,
     sourceType: 'module',
   },
-
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
   rules: {
     'prettier/prettier': 'off',
     'unicorn/prefer-module': 'off',
