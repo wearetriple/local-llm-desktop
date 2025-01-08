@@ -42,8 +42,11 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@mantine/core": "^7.15.3",
     "@mantine/hooks": "^7.15.3",
+    "@minchat/react-chat-ui": "^0.16.2",
     "electron-updater": "^6.1.7",
-    "react-router-dom": "^7.1.1"
+    "ollama": "^0.5.11",
+    "react-router-dom": "^7.1.1",
+    "unstated-next": "^1.1.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",

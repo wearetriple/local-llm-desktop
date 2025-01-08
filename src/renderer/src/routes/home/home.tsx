@@ -1,3 +1,5 @@
+import { ChatUI } from '@renderer/components/organisms/chat-ui/chat-ui';
+
 export default function Home() {
-  return <div>Home aaa</div>;
+  return <ChatUI />;
 }

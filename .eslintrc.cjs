@@ -24,6 +24,10 @@ module.exports = {
     'unicorn/prefer-module': 'off',
     'unicorn/prefer-top-level-await': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
+    indent: 'off', // prettier handles this
+
+    /* It keeps complaining that @types/react and electron are devDependencies, but that is how the boilerplate is set up */
+    'import/no-extraneous-dependencies': 'off',
   },
   overrides: [
     {
