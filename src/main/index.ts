@@ -20,6 +20,10 @@ function createWindow(): void {
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show();
+    // Open DevTools automatically if in development mode
+    if (is.dev) {
+      mainWindow.webContents.openDevTools();
+    }
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
