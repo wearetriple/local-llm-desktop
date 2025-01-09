@@ -25,6 +25,7 @@ module.exports = {
     'unicorn/prefer-top-level-await': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     indent: 'off', // prettier handles this
+    'unicorn/prefer-global-this': 'off', // it warns when we attempt to write windows.api
 
     /* It keeps complaining that @types/react and electron are devDependencies, but that is how the boilerplate is set up */
     'import/no-extraneous-dependencies': 'off',

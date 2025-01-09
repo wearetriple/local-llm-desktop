@@ -31,7 +31,7 @@ export function ChatUI() {
 
   return (
     <MinChatUiProvider theme="#6ea9d7">
-      <MainContainer style={{ height: '100vh' }}>
+      <MainContainer style={{ height: '100%' }}>
         <MessageContainer>
           <MessageList currentUserId="user" messages={mappedMessages} />
           <MessageInput

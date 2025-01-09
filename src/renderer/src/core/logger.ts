@@ -1,5 +1,7 @@
+import { isDevelopment } from './utils/is-devevelopment';
+
 export function logger(..._arguments: unknown[]) {
-  if (globalThis.location.port === '5173') {
+  if (isDevelopment()) {
     console.log(..._arguments);
   }
 }
