@@ -1,17 +1,11 @@
 import { ollamaApi } from '@renderer/services/ollama/api';
+import { ConversationHistoryProvider, Message } from '@renderer/state/conversation-history';
 import { OllamaContainer } from '@renderer/state/ollama';
 import { useState } from 'react';
 
-type Message = {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  streaming?: boolean;
-  when: Date;
-};
-
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([]);
   const { models } = OllamaContainer.useContainer();
+  const { messages, setMessages } = ConversationHistoryProvider.useContainer();
   const [streamingMessage, setStreamingMessage] = useState<boolean>(false);
 
   async function sendMessage(message: string) {
