@@ -60,5 +60,6 @@ export function useChat() {
     sendMessage,
     messages,
     typingEnabled: !streamingMessage,
+    streamingMessage,
   };
 }

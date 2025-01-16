@@ -13,7 +13,7 @@ export function Main() {
       layout="alt"
       header={{ height: 60 }}
       navbar={{ width: 350, breakpoint: 'sm', collapsed: { mobile: !opened, desktop: !opened } }}
-      padding="md"
+      padding={0}
     >
       <AppShell.Header>
         <Group h="100%" px="md">
@@ -25,7 +25,7 @@ export function Main() {
         <Burger opened={opened} onClick={toggle} size="sm" mb="md" />
         <Sidebar />
       </AppShell.Navbar>
-      <AppShell.Main>
+      <AppShell.Main style={{ display: 'flex', flexDirection: 'column' }}>
         <Outlet />
       </AppShell.Main>
     </AppShell>
