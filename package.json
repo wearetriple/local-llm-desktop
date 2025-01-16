@@ -30,7 +30,7 @@
       "eslint --max-warnings 0 --no-ignore",
       "sh -c 'tsc -p tsconfig.json --noEmit'"
     ],
-    "*.(js|cjs|mjs)": [
+    "!(.eslintrc).{js,cjs,mjs}": [
       "eslint --max-warnings 0 --no-ignore"
     ],
     "*.(json|md)": [
@@ -46,7 +46,10 @@
     "date-fns": "^4.1.0",
     "electron-updater": "^6.1.7",
     "ollama": "^0.5.11",
+    "pretty-bytes": "^6.1.1",
     "react-router-dom": "^7.1.1",
+    "shelljs": "^0.8.5",
+    "systeminformation": "^5.25.11",
     "unstated-next": "^1.1.0",
     "zod": "^3.24.1"
   },
@@ -57,6 +60,7 @@
     "@types/node": "^20.14.8",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/shelljs": "^0.8.15",
     "@vitejs/plugin-react": "^4.3.1",
     "concurrently": "^9.1.2",
     "electron": "^31.0.2",
