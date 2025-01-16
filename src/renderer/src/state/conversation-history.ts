@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, useRef } from 'react';
 import { createContainer } from 'unstated-next';
 import type { Conversation as StoredConversation } from 'src/main/api-ipc/conversation-history/validator';
 import { logger } from '@renderer/core/logger';
+import { useThrottledState } from '@mantine/hooks';
 export type Message = {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -33,7 +34,7 @@ function mapConversationToStoredConversation(conversation: Conversation): Stored
 
 function useConversationHistory() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useThrottledState<Message[]>([], 200);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
 
   const currentConversationReference = useRef(currentConversation);
@@ -47,7 +48,8 @@ function useConversationHistory() {
   }, [messages]);
 
   useEffect(() => {
-    if (!currentConversation) {
+    // Only update the conversation if it's not streaming a new reply
+    if (!currentConversation || currentConversation.messages.some((message) => message.streaming)) {
       return;
     }
     // update the conversation in the conversations array
@@ -92,6 +94,7 @@ function useConversationHistory() {
     (newMessages: Message[] | ((currentMessages: Message[]) => Message[])) => {
       const updatedMessages =
         typeof newMessages === 'function' ? newMessages(messagesReference.current) : newMessages;
+
       setMessages(updatedMessages);
       messagesReference.current = updatedMessages;
       if (updatedMessages.length === 0) {
