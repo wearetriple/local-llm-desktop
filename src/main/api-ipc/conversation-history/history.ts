@@ -1,10 +1,10 @@
-import { app } from 'electron';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { conversationSchema, type Conversation } from './validator';
-import { IpcResult } from '../types';
+import { IpcResult } from '@shared/api-ipc/types';
+import { APP_CONFIG_PATH } from '../../constants';
 
-const BASE_PATH = path.join(app.getPath('userData'), 'local-llm/conversations');
+const BASE_PATH = path.join(APP_CONFIG_PATH, 'conversations');
 
 async function initializeStore(): Promise<void> {
   await fs.mkdir(BASE_PATH, { recursive: true });

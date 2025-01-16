@@ -14,7 +14,7 @@ export function useChat() {
     const newMessage: Message = { role: 'user', content: message, when: new Date() };
     setMessages((previous) => [...previous, newMessage]);
     const response = await ollamaApi.chat({
-      model: models[0],
+      model: models.values().next().value ?? '',
       messages: [
         ...messages.map((message) => ({ role: message.role, content: message.content })),
         { role: 'user', content: message },

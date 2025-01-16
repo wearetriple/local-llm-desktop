@@ -29,6 +29,8 @@ module.exports = {
 
     /* It keeps complaining that @types/react and electron are devDependencies, but that is how the boilerplate is set up */
     'import/no-extraneous-dependencies': 'off',
+    curly: 'error',
+    'no-console': 'error',
   },
   overrides: [
     {
