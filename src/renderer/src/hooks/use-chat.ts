@@ -1,24 +1,30 @@
 import { ollamaApi } from '@renderer/services/ollama/api';
 import { ConversationHistoryProvider, Message } from '@renderer/state/conversation-history';
 import { OllamaContainer } from '@renderer/state/ollama';
+import { PersonasContainer } from '@renderer/state/personas';
 import { useState } from 'react';
 
 export function useChat() {
   const { models } = OllamaContainer.useContainer();
   const { messages, setMessages } = ConversationHistoryProvider.useContainer();
   const [streamingMessage, setStreamingMessage] = useState<boolean>(false);
+  const { activePersona } = PersonasContainer.useContainer();
 
   async function sendMessage(message: string) {
     setStreamingMessage(true);
 
     const newMessage: Message = { role: 'user', content: message, when: new Date() };
     setMessages((previous) => [...previous, newMessage]);
+
+    const messagesToSend = [
+      ...messages.map((message) => ({ role: message.role, content: message.content })),
+      { role: 'user', content: message },
+    ];
     const response = await ollamaApi.chat({
       model: models.values().next().value ?? '',
-      messages: [
-        ...messages.map((message) => ({ role: message.role, content: message.content })),
-        { role: 'user', content: message },
-      ],
+      messages: activePersona
+        ? [{ role: 'system', content: activePersona.prompt }, ...messagesToSend]
+        : messagesToSend,
       stream: true,
     });
 

@@ -2,7 +2,7 @@ import { IpcResult } from '@shared/api-ipc/types';
 import { totalmem, freemem } from 'node:os';
 import { logger } from '../../core/logger';
 import si from 'systeminformation';
-import { SystemGetDetails } from '@shared/api-ipc/configuration';
+import { SystemGetDetails } from '@shared/api-ipc/system';
 
 export async function systemGetDetails(): Promise<IpcResult<SystemGetDetails>> {
   try {
