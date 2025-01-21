@@ -9,9 +9,9 @@ import {
   CONFIGURATION_GET,
   CONFIGURATION_WRITE,
   Configuration,
-  SYSTEM_GET_DETAILS,
-  SystemGetDetails,
 } from '@shared/api-ipc/configuration';
+import { SYSTEM_GET_DETAILS, SystemGetDetails } from '@shared/api-ipc/system';
+import { Persona, PERSONAS_GET, PERSONAS_WRITE } from '@shared/api-ipc/personas';
 
 function logger(..._arguments: unknown[]) {
   if (process.env['NODE_ENV'] === 'development') {
@@ -64,4 +64,12 @@ export async function writeConfiguration(config: Configuration): Promise<void> {
 
 export async function getSystemDetails(): Promise<SystemGetDetails> {
   return await invokeIpc(SYSTEM_GET_DETAILS);
+}
+
+export async function getPersonas(): Promise<Persona[]> {
+  return await invokeIpc(PERSONAS_GET);
+}
+
+export async function writePersonas(personas: Persona[]): Promise<void> {
+  return await invokeIpc(PERSONAS_WRITE, personas);
 }

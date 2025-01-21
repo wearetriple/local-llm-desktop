@@ -6,9 +6,12 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from '@renderer/components/molecules/code-block';
 import { BotIcon } from '@renderer/components/atom/bot-icon';
+import { PersonasContainer } from '@renderer/state/personas';
+import { NameAvatar } from '@renderer/components/atom/name-avatar';
 
 export default function Chat() {
   const { messages, sendMessage, typingEnabled, streamingMessage } = useChat();
+  const { activePersona } = PersonasContainer.useContainer();
   const viewportReference = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState('');
 
@@ -104,24 +107,28 @@ export default function Chat() {
         }}
       >
         <form onSubmit={handleSubmit}>
-          <TextInput
-            value={inputValue}
-            onChange={(event) => setInputValue(event.currentTarget.value)}
-            placeholder="Type a message..."
-            rightSection={
-              <ActionIcon
-                size={32}
-                radius="xl"
-                color="blue"
-                variant="filled"
-                disabled={!typingEnabled || !inputValue.trim()}
-                type="submit"
-              >
-                📤
-              </ActionIcon>
-            }
-            rightSectionWidth={42}
-          />
+          <Group gap="sm" align="center">
+            {activePersona && <NameAvatar name={activePersona.name} />}
+            <TextInput
+              value={inputValue}
+              onChange={(event) => setInputValue(event.currentTarget.value)}
+              placeholder="Type a message..."
+              style={{ flex: 1 }}
+              rightSection={
+                <ActionIcon
+                  size={32}
+                  radius="xl"
+                  color="blue"
+                  variant="filled"
+                  disabled={!typingEnabled || !inputValue.trim()}
+                  type="submit"
+                >
+                  📤
+                </ActionIcon>
+              }
+              rightSectionWidth={42}
+            />
+          </Group>
         </form>
       </Box>
     </Stack>

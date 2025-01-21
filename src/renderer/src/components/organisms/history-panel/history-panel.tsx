@@ -1,5 +1,6 @@
-import { Button, Card, Group, Notification, ScrollArea, Stack, Text, Title } from '@mantine/core';
+import { Button, Card, Notification, ScrollArea, Stack, Text } from '@mantine/core';
 import { ConversationHistoryProvider } from '@renderer/state/conversation-history';
+import { IconPlus } from '@tabler/icons-react';
 import { formatRelative } from 'date-fns';
 
 export function HistoryPanel() {
@@ -10,14 +11,16 @@ export function HistoryPanel() {
 
   return (
     <ScrollArea h="100vh" type="hover">
-      <Group justify="space-between">
-        <Title order={3} mb="md">
-          History
-        </Title>
-        <Button size="lg" variant="transparent" onClick={() => newConversation()}>
-          +
-        </Button>
-      </Group>
+      <Button
+        variant="light"
+        onClick={() => newConversation()}
+        leftSection={<IconPlus size={16} />}
+        mb="md"
+        mt="xs"
+      >
+        New conversation
+      </Button>
+
       {conversations.length === 0 && (
         <Notification color="gray" withCloseButton={false}>
           No conversations available.
