@@ -2,16 +2,22 @@ import { ollamaApi } from '@renderer/services/ollama/api';
 import { ConversationHistoryProvider, Message } from '@renderer/state/conversation-history';
 import { OllamaContainer } from '@renderer/state/ollama';
 import { PersonasContainer } from '@renderer/state/personas';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 export function useChat() {
   const { models } = OllamaContainer.useContainer();
   const { messages, setMessages } = ConversationHistoryProvider.useContainer();
   const [streamingMessage, setStreamingMessage] = useState<boolean>(false);
   const { activePersona } = PersonasContainer.useContainer();
+  const [selectedModel, setSelectedModel] = useState<string>('');
+  const streamBuffer = useRef<string>('');
+
+  const selectedModelReference = useRef<string>(selectedModel);
+  selectedModelReference.current = selectedModel;
 
   async function sendMessage(message: string) {
     setStreamingMessage(true);
+    streamBuffer.current = '';
 
     const newMessage: Message = { role: 'user', content: message, when: new Date() };
     setMessages((previous) => [...previous, newMessage]);
@@ -20,8 +26,9 @@ export function useChat() {
       ...messages.map((message) => ({ role: message.role, content: message.content })),
       { role: 'user', content: message },
     ];
+
     const response = await ollamaApi.chat({
-      model: models.values().next().value ?? '',
+      model: selectedModelReference.current,
       messages: activePersona
         ? [{ role: 'system', content: activePersona.prompt }, ...messagesToSend]
         : messagesToSend,
@@ -40,23 +47,27 @@ export function useChat() {
             when: new Date(part.created_at),
           },
         ]);
+        streamBuffer.current = part.message.content;
         firstStreamInput = false;
         continue;
       }
 
+      streamBuffer.current += part.message.content;
       setMessages((previous) =>
         previous.map((message, index) =>
           index === previous.length - 1
             ? {
                 ...message,
-                content: `${message.content}${part.message.content}`,
-                streaming: part.done,
+                content: streamBuffer.current,
+                streaming: !part.done,
               }
             : message,
         ),
       );
+
       if (part.done) {
         setStreamingMessage(false);
+        streamBuffer.current = '';
       }
     }
   }
@@ -67,5 +78,7 @@ export function useChat() {
     messages,
     typingEnabled: !streamingMessage,
     streamingMessage,
+    selectedModel,
+    setSelectedModel,
   };
 }

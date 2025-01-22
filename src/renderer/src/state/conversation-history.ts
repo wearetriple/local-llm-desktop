@@ -2,7 +2,10 @@ import { useCallback, useEffect, useState, useRef } from 'react';
 import { createContainer } from 'unstated-next';
 import type { Conversation as StoredConversation } from 'src/main/api-ipc/conversation-history/validator';
 import { logger } from '@renderer/core/logger';
-import { useThrottledState } from '@mantine/hooks';
+import { ConfigurationContainer } from './configuration';
+import { MODELS } from './configuration';
+import type { ErrorResponse, GenerateTitleResponse } from '../worker';
+
 export type Message = {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -34,8 +37,9 @@ function mapConversationToStoredConversation(conversation: Conversation): Stored
 
 function useConversationHistory() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [messages, setMessages] = useThrottledState<Message[]>([], 200);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
+  const { configuration } = ConfigurationContainer.useContainer();
 
   const currentConversationReference = useRef(currentConversation);
   const messagesReference = useRef<Message[]>(messages);
@@ -52,6 +56,7 @@ function useConversationHistory() {
     if (!currentConversation || currentConversation.messages.some((message) => message.streaming)) {
       return;
     }
+
     // update the conversation in the conversations array
     setConversations((previousConversations) => {
       const hasConversation = previousConversations.some(
@@ -118,10 +123,48 @@ function useConversationHistory() {
         setCurrentConversation(newConversation);
         currentConversationReference.current = newConversation;
 
+        if (configuration && updatedMessages[0]) {
+          const generalModel = MODELS[configuration.system].models.find((model) =>
+            model.tasks.includes('general'),
+          );
+          if (generalModel) {
+            // Initialize the web worker
+            const titleWorker = new Worker(new URL('../worker.ts', import.meta.url), {
+              type: 'module',
+            });
+
+            // eslint-disable-next-line unicorn/prefer-add-event-listener
+            titleWorker.onmessage = (
+              event: MessageEvent<GenerateTitleResponse | ErrorResponse>,
+            ) => {
+              titleWorker.terminate();
+              if (event.data.type === 'titleGenerated') {
+                const { title } = event.data;
+                if (currentConversationReference.current) {
+                  setCurrentConversation((previous) => (previous ? { ...previous, title } : null));
+                }
+                return;
+              }
+              logger('Error generating title:', event.data);
+            };
+
+            titleWorker.postMessage({
+              type: 'generateTitle',
+              message: updatedMessages[0].content,
+              modelTag: generalModel.modelTag,
+            });
+          }
+          logger(
+            'No general model found for the current system configuration, not summarizing the conversation.',
+          );
+        } else {
+          logger('No configuration found; or no message: not summarizing the conversation.');
+        }
+
         void saveConversation(newConversation);
       }
     },
-    [messages, setMessages, saveConversation],
+    [messages, setMessages, saveConversation, configuration],
   );
 
   const openConversation = useCallback(

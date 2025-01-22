@@ -10,3 +10,11 @@ export const ConfigurationSchema = z.object({
 });
 
 export type Configuration = z.infer<typeof ConfigurationSchema>;
+
+export const TASK_LABELS: Record<Configuration['tasks'][number], string> = {
+  reasoning: 'Reasoning',
+  coding: 'Coding',
+  ['data-analysis']: 'Data Analysis',
+  ['creative-writing']: 'Creative Writing',
+  general: 'General Chat',
+};
