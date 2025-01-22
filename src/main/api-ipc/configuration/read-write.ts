@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { app } from 'electron';
 import { ConfigurationSchema, Configuration } from '../../../shared/api-ipc/configuration';
 import { IpcResult } from '@shared/api-ipc/types';
+import { APP_CONFIG_PATH } from '../../constants';
 
-const CONFIG_FILE_PATH = path.join(app.getPath('userData'), 'app-config.json');
+const CONFIG_FILE_PATH = path.join(APP_CONFIG_PATH, 'app-config.json');
 
 /**
  * Reads the configuration from disk and validates it
