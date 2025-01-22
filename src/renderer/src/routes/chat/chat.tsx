@@ -1,6 +1,16 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { FormEvent, useEffect, useRef, useState } from 'react';
-import { Stack, ScrollArea, TextInput, ActionIcon, Paper, Box, Text, Group } from '@mantine/core';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Stack,
+  ScrollArea,
+  TextInput,
+  ActionIcon,
+  Paper,
+  Box,
+  Text,
+  Group,
+  NativeSelect,
+} from '@mantine/core';
 import { useChat } from '@renderer/hooks/use-chat';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -8,9 +18,14 @@ import { CodeBlock } from '@renderer/components/molecules/code-block';
 import { BotIcon } from '@renderer/components/atom/bot-icon';
 import { PersonasContainer } from '@renderer/state/personas';
 import { NameAvatar } from '@renderer/components/atom/name-avatar';
+import { ConfigurationContainer, MODELS } from '@renderer/state/configuration';
+import { TASK_LABELS } from '@shared/api-ipc/configuration';
+import { OllamaContainer } from '@renderer/state/ollama';
 
 export default function Chat() {
-  const { messages, sendMessage, typingEnabled, streamingMessage } = useChat();
+  const { messages, sendMessage, typingEnabled, setSelectedModel, selectedModel } = useChat();
+  const { configuration } = ConfigurationContainer.useContainer();
+  const { models } = OllamaContainer.useContainer();
   const { activePersona } = PersonasContainer.useContainer();
   const viewportReference = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState('');
@@ -26,7 +41,34 @@ export default function Chat() {
         });
       });
     }
-  }, [messages, streamingMessage]); // Also trigger on streamingMessage changes
+  }, [messages]);
+
+  const taskOptions: { value: string; label: string }[] = useMemo(() => {
+    if (!configuration) {
+      return [];
+    }
+
+    const configurationDefinition = MODELS[configuration.system];
+
+    const modelsToUse = configuration.tasks
+      .map((task) => {
+        const configurationModel = configurationDefinition.models.find((configurationModel) =>
+          configurationModel.tasks.includes(task),
+        );
+        if (!configurationModel) {
+          return;
+        }
+        return { value: configurationModel.modelTag, label: TASK_LABELS[task] };
+      })
+      .filter((modelName) => modelName !== undefined);
+    return modelsToUse;
+  }, [configuration, models]);
+
+  useEffect(() => {
+    if (!selectedModel && taskOptions.length > 0) {
+      setSelectedModel(taskOptions[0].value);
+    }
+  }, [taskOptions, selectedModel]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -38,7 +80,7 @@ export default function Chat() {
 
   return (
     <Stack h="100%" gap={0} pos="relative">
-      <ScrollArea h="calc(100vh - 130px)" offsetScrollbars viewportRef={viewportReference}>
+      <ScrollArea h="calc(100vh - 170px)" offsetScrollbars viewportRef={viewportReference}>
         <Stack gap="md" p="md">
           {messages.length === 0 ? (
             <Group align="center" preventGrowOverflow={false}>
@@ -58,7 +100,7 @@ export default function Chat() {
             messages.map((message, index) => (
               <Paper
                 key={index}
-                p="sm"
+                p="xs"
                 radius="md"
                 bg={message.role === 'user' ? 'blue.1' : 'gray.0'}
                 style={{
@@ -75,15 +117,25 @@ export default function Chat() {
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
-                        p: ({ children }) => <Text size="sm">{children}</Text>,
+                        p: ({ children }) => <Box mb={8}>{children}</Box>,
                         code: ({ children }) => <CodeBlock>{children}</CodeBlock>,
+                        ul: ({ children }) => (
+                          <Box component="ul" my={4} ml={16}>
+                            {children}
+                          </Box>
+                        ),
+                        li: ({ children }) => (
+                          <Box component="li" mb={4}>
+                            {children}
+                          </Box>
+                        ),
                       }}
                     >
                       {message.content}
                     </ReactMarkdown>
                   </Box>
                 )}
-                {streamingMessage && index === messages.length - 1 && (
+                {message.streaming && (
                   <Text size="xs" c="dimmed" mt={4}>
                     typing...
                   </Text>
@@ -106,30 +158,40 @@ export default function Chat() {
           zIndex: 10,
         }}
       >
-        <form onSubmit={handleSubmit}>
-          <Group gap="sm" align="center">
-            {activePersona && <NameAvatar name={activePersona.name} />}
-            <TextInput
-              value={inputValue}
-              onChange={(event) => setInputValue(event.currentTarget.value)}
-              placeholder="Type a message..."
-              style={{ flex: 1 }}
-              rightSection={
-                <ActionIcon
-                  size={32}
-                  radius="xl"
-                  color="blue"
-                  variant="filled"
-                  disabled={!typingEnabled || !inputValue.trim()}
-                  type="submit"
-                >
-                  📤
-                </ActionIcon>
-              }
-              rightSectionWidth={42}
-            />
-          </Group>
-        </form>
+        <Stack gap="xs">
+          <form onSubmit={handleSubmit}>
+            <Group gap="sm" align="center">
+              {activePersona && <NameAvatar name={activePersona.name} />}
+              <TextInput
+                value={inputValue}
+                onChange={(event) => setInputValue(event.currentTarget.value)}
+                placeholder="Type a message..."
+                style={{ flex: 1 }}
+                rightSection={
+                  <ActionIcon
+                    size={32}
+                    radius="xl"
+                    color="blue"
+                    variant="filled"
+                    disabled={!typingEnabled || !inputValue.trim()}
+                    type="submit"
+                  >
+                    📤
+                  </ActionIcon>
+                }
+                rightSectionWidth={42}
+              />
+            </Group>
+          </form>
+          <NativeSelect
+            aria-label="Select task"
+            size="xs"
+            value={selectedModel}
+            onChange={(event) => setSelectedModel(event.currentTarget.value)}
+            data={taskOptions}
+            style={{ maxWidth: 200, alignSelf: 'flex-end' }}
+          />
+        </Stack>
       </Box>
     </Stack>
   );

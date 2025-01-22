@@ -4,20 +4,18 @@ import { useEffect, useState } from 'react';
 import { createContainer } from 'unstated-next';
 import { ConfigurationContainer } from './configuration';
 import { MODELS } from './configuration';
+import type { ModelResponse } from 'ollama';
 
 function useOllama() {
   const [online, setOnline] = useState(false);
   const [initializing, setInitializing] = useState(true);
-  const [models] = useState<Set<string>>(new Set());
+  const [models, setModels] = useState<ModelResponse[]>([]);
   const { configuration } = ConfigurationContainer.useContainer();
 
   async function checkStatus() {
     try {
       const response = await ollamaApi.list();
-      models.clear();
-      for (const model of response.models) {
-        models.add(model.name);
-      }
+      setModels(response.models);
       setOnline(true);
     } catch (error) {
       logger('Error fetching ollama status', error);
@@ -36,7 +34,7 @@ function useOllama() {
         .map((model) => model.modelTag),
     );
 
-    return [...requiredModels].every((model) => models.has(model));
+    return [...requiredModels].every((model) => models.some((m) => m.name === model));
   }
 
   useEffect(() => {
