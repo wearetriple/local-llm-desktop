@@ -31,6 +31,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     curly: 'error',
     'no-console': 'error',
+    '@typescript-eslint/consistent-type-imports': 'error',
   },
   overrides: [
     {

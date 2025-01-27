@@ -1,6 +1,6 @@
 import { Button, Group, Stack, TextInput, Textarea } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { Persona } from '@shared/api-ipc/personas';
+import type { Persona } from '@shared/api-ipc/personas';
 import { useNavigate } from 'react-router-dom';
 
 interface PersonaFormProperties {

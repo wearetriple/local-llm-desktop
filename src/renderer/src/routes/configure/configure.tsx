@@ -14,7 +14,7 @@ import { useApiIpc } from '@renderer/hooks/use-api-ipc';
 import { ConfigurationContainer, MODELS } from '@renderer/state/configuration';
 import { MemoryBar } from '@renderer/components/atom/memory-bar';
 import { useState, useMemo, useEffect } from 'react';
-import { Configuration } from '@shared/api-ipc/configuration';
+import type { Configuration } from '@shared/api-ipc/configuration';
 import { useNavigate } from 'react-router-dom';
 
 export function Configure() {

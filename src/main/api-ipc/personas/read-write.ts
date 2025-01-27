@@ -2,8 +2,8 @@ import { z } from 'zod';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { PersonasSchema } from '../../../shared/api-ipc/personas';
-import { IpcResult } from '@shared/api-ipc/types';
-import { Persona } from '@shared/api-ipc/personas';
+import type { IpcResult } from '@shared/api-ipc/types';
+import type { Persona } from '@shared/api-ipc/personas';
 import { logger } from '../../core/logger';
 import { APP_CONFIG_PATH } from '../../constants';
 

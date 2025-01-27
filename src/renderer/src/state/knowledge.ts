@@ -1,5 +1,5 @@
 import { useApiIpc } from '@renderer/hooks/use-api-ipc';
-import { KnowledgeSet } from '@shared/api-ipc/knowledge';
+import type { KnowledgeSet } from '@shared/api-ipc/knowledge';
 import { createContainer } from 'unstated-next';
 
 function useKnowledge() {

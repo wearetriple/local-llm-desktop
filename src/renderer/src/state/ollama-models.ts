@@ -1,9 +1,9 @@
-import { Configuration } from '@shared/api-ipc/configuration';
+import type { Configuration } from '@shared/api-ipc/configuration';
 import { useRef, useState } from 'react';
 import { createContainer } from 'unstated-next';
 import { MODELS } from './configuration';
 import { ollamaApi, pullModel } from '@renderer/services/ollama/api';
-import { ModelResponse } from 'ollama';
+import type { ModelResponse } from 'ollama';
 
 export interface ModelDownloadStatus {
   modelTag: string;

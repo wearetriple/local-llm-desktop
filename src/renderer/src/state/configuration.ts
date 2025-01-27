@@ -1,5 +1,5 @@
 import { useApiIpc } from '@renderer/hooks/use-api-ipc';
-import { Configuration } from '@shared/api-ipc/configuration';
+import type { Configuration } from '@shared/api-ipc/configuration';
 import { createContainer } from 'unstated-next';
 
 export const MODELS: Record<

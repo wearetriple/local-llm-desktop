@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { which } from 'shelljs';
-import { IpcResult } from '@shared/api-ipc/types';
+import type { IpcResult } from '@shared/api-ipc/types';
 
 export async function startOllamaServer(): Promise<IpcResult<void>> {
   try {

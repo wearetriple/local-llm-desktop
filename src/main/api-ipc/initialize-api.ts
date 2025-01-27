@@ -13,10 +13,10 @@ import { systemGetDetails } from './system/get-details';
 import { readPersonas, writePersonas } from './personas/read-write';
 import { PERSONAS_GET, PERSONAS_WRITE } from '@shared/api-ipc/personas';
 import { SYSTEM_GET_DETAILS } from '@shared/api-ipc/system';
+import type { SourcePath } from '@shared/api-ipc/knowledge';
 import {
   CREATE_KNOWLEDGE_SET,
   DELETE_KNOWLEDGE_SET,
-  SourcePath,
   UPDATE_KNOWLEDGE_SET,
 } from '@shared/api-ipc/knowledge';
 import { LIST_KNOWLEDGE_SETS } from '@shared/api-ipc/knowledge';
@@ -28,7 +28,7 @@ import {
 } from './knowledge/read-write';
 import { OPEN_DIRECTORY_DIALOG } from '@shared/api-ipc/dialog';
 import { showSelectDirectoryDialog } from './dialog/open';
-import { IpcResult } from '@shared/api-ipc/types';
+import type { IpcResult } from '@shared/api-ipc/types';
 
 export function initializeIpcApi() {
   ipcMain.handle('conversation:save', async (_, conversation) => saveConversation(conversation));

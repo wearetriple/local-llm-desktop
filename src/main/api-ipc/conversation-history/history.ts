@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { conversationSchema, type Conversation } from './validator';
-import { IpcResult } from '@shared/api-ipc/types';
+import type { IpcResult } from '@shared/api-ipc/types';
 import { APP_CONFIG_PATH } from '../../constants';
 
 const BASE_PATH = path.join(APP_CONFIG_PATH, 'conversations');

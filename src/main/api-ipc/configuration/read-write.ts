@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { ConfigurationSchema, Configuration } from '../../../shared/api-ipc/configuration';
-import { IpcResult } from '@shared/api-ipc/types';
+import type { Configuration } from '../../../shared/api-ipc/configuration';
+import { ConfigurationSchema } from '../../../shared/api-ipc/configuration';
+import type { IpcResult } from '@shared/api-ipc/types';
 import { APP_CONFIG_PATH } from '../../constants';
 
 const CONFIG_FILE_PATH = path.join(APP_CONFIG_PATH, 'app-config.json');

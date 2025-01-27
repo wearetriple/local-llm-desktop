@@ -2,7 +2,7 @@
 import { Button, Group, Stack, Text, TextInput, ActionIcon } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { FileDropzone } from '@renderer/components/molecules/file-dropzone';
-import { SourcePath } from '@shared/api-ipc/knowledge';
+import type { SourcePath } from '@shared/api-ipc/knowledge';
 import { IconFile, IconFolder, IconTrash } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { logger } from '@renderer/core/logger';
