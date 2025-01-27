@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, webUtils } from 'electron';
 import type { Conversation } from '../../main/api-ipc/conversation-history/validator';
 import { OLLAMA_CHECK_EXISTS, OLLAMA_START_SERVER } from '@shared/api-ipc/ollama';
 import { IpcResult } from '@shared/api-ipc/types';
@@ -12,6 +12,15 @@ import {
 } from '@shared/api-ipc/configuration';
 import { SYSTEM_GET_DETAILS, SystemGetDetails } from '@shared/api-ipc/system';
 import { Persona, PERSONAS_GET, PERSONAS_WRITE } from '@shared/api-ipc/personas';
+import {
+  CREATE_KNOWLEDGE_SET,
+  LIST_KNOWLEDGE_SETS,
+  UPDATE_KNOWLEDGE_SET,
+  DELETE_KNOWLEDGE_SET,
+  KnowledgeSet,
+  SourcePath,
+} from '@shared/api-ipc/knowledge';
+import { OPEN_DIRECTORY_DIALOG } from '@shared/api-ipc/dialog';
 
 function logger(..._arguments: unknown[]) {
   if (process.env['NODE_ENV'] === 'development') {
@@ -72,4 +81,33 @@ export async function getPersonas(): Promise<Persona[]> {
 
 export async function writePersonas(personas: Persona[]): Promise<void> {
   return await invokeIpc(PERSONAS_WRITE, personas);
+}
+
+export async function listKnowledgeSets(): Promise<KnowledgeSet[]> {
+  return await invokeIpc(LIST_KNOWLEDGE_SETS);
+}
+
+export async function createKnowledgeSet(name: string, sources: SourcePath[]): Promise<void> {
+  return await invokeIpc(CREATE_KNOWLEDGE_SET, name, sources);
+}
+
+export async function updateKnowledgeSet(
+  id: string,
+  name: string,
+  sources: SourcePath[],
+): Promise<void> {
+  return await invokeIpc(UPDATE_KNOWLEDGE_SET, id, name, sources);
+}
+
+export async function deleteKnowledgeSet(id: string): Promise<void> {
+  return await invokeIpc(DELETE_KNOWLEDGE_SET, id);
+}
+
+export async function openDirectoryDialog(): Promise<string[] | null> {
+  return await invokeIpc(OPEN_DIRECTORY_DIALOG);
+}
+
+export function getFilePath(file: File): string {
+  const result = webUtils.getPathForFile(file);
+  return result;
 }

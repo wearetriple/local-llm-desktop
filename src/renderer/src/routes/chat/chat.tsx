@@ -11,6 +11,7 @@ import {
   Group,
   NativeSelect,
 } from '@mantine/core';
+import { IconSend2 } from '@tabler/icons-react';
 import { useChat } from '@renderer/hooks/use-chat';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -176,7 +177,7 @@ export default function Chat() {
                     disabled={!typingEnabled || !inputValue.trim()}
                     type="submit"
                   >
-                    📤
+                    <IconSend2 size={24} />
                   </ActionIcon>
                 }
                 rightSectionWidth={42}
