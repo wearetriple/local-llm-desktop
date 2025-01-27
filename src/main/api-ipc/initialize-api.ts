@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-import { ipcMain } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import {
   getConversation,
   listConversations,
@@ -13,6 +13,22 @@ import { systemGetDetails } from './system/get-details';
 import { readPersonas, writePersonas } from './personas/read-write';
 import { PERSONAS_GET, PERSONAS_WRITE } from '@shared/api-ipc/personas';
 import { SYSTEM_GET_DETAILS } from '@shared/api-ipc/system';
+import {
+  CREATE_KNOWLEDGE_SET,
+  DELETE_KNOWLEDGE_SET,
+  SourcePath,
+  UPDATE_KNOWLEDGE_SET,
+} from '@shared/api-ipc/knowledge';
+import { LIST_KNOWLEDGE_SETS } from '@shared/api-ipc/knowledge';
+import {
+  createKnowledgeSet,
+  deleteKnowledgeSet,
+  listKnowledgeSets,
+  updateKnowledgeSet,
+} from './knowledge/read-write';
+import { OPEN_DIRECTORY_DIALOG } from '@shared/api-ipc/dialog';
+import { showSelectDirectoryDialog } from './dialog/open';
+import { IpcResult } from '@shared/api-ipc/types';
 
 export function initializeIpcApi() {
   ipcMain.handle('conversation:save', async (_, conversation) => saveConversation(conversation));
@@ -25,4 +41,19 @@ export function initializeIpcApi() {
   ipcMain.handle(SYSTEM_GET_DETAILS, async () => systemGetDetails());
   ipcMain.handle(PERSONAS_GET, async () => readPersonas());
   ipcMain.handle(PERSONAS_WRITE, async (_, personas) => writePersonas(personas));
+  ipcMain.handle(LIST_KNOWLEDGE_SETS, async () => listKnowledgeSets());
+  ipcMain.handle(CREATE_KNOWLEDGE_SET, async (_, name: string, sources: SourcePath[]) =>
+    createKnowledgeSet(name, sources),
+  );
+  ipcMain.handle(UPDATE_KNOWLEDGE_SET, async (_, id: string, name: string, sources: SourcePath[]) =>
+    updateKnowledgeSet(id, name, sources),
+  );
+  ipcMain.handle(DELETE_KNOWLEDGE_SET, async (_, id) => deleteKnowledgeSet(id));
+  ipcMain.handle(OPEN_DIRECTORY_DIALOG, async (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window) {
+      return { error: 'No window found' } satisfies IpcResult<void>;
+    }
+    return showSelectDirectoryDialog(window);
+  });
 }

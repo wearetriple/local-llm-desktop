@@ -28,7 +28,7 @@ export function EditPersona() {
   };
 
   return (
-    <Container size="sm" py="xl">
+    <Container miw="500px" py="xl">
       <Title order={2} mb="lg">
         Edit Persona
       </Title>

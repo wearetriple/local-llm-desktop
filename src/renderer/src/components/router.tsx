@@ -8,6 +8,8 @@ import { Configure } from '@renderer/routes/configure/configure';
 import { Download } from '@renderer/routes/download/download';
 import { CreatePersona } from '@renderer/routes/personas/create';
 import { EditPersona } from '@renderer/routes/personas/edit';
+import { CreateKnowledge } from '@renderer/routes/knowledge/create';
+import { EditKnowledge } from '@renderer/routes/knowledge/edit';
 
 export default function Router() {
   return (
@@ -23,6 +25,8 @@ export default function Router() {
           <Route key="home" path="/chat" element={<Chat />} />
           <Route key="create-persona" path="/personas/create" element={<CreatePersona />} />
           <Route key="edit-persona" path="/personas/edit/:id" element={<EditPersona />} />
+          <Route key="create-knowledge" path="/knowledge/create" element={<CreateKnowledge />} />
+          <Route key="edit-knowledge" path="/knowledge/edit/:id" element={<EditKnowledge />} />
         </Route>
         <Route key="not-found" path="*" element={<div>{window.location.hash} Not Found</div>} />
       </Routes>
