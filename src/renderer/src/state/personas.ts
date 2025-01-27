@@ -1,5 +1,5 @@
 import { useApiIpc } from '@renderer/hooks/use-api-ipc';
-import { Persona } from '@shared/api-ipc/personas';
+import type { Persona } from '@shared/api-ipc/personas';
 import { useState } from 'react';
 import { createContainer } from 'unstated-next';
 

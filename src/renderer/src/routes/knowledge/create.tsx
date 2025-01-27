@@ -1,7 +1,7 @@
 import { Container, Title } from '@mantine/core';
 import { KnowledgeForm } from '@renderer/components/organisms/knowledge-panel/knowledge-form';
 import { KnowledgeContainer } from '@renderer/state/knowledge';
-import { SourcePath } from '@shared/api-ipc/knowledge';
+import type { SourcePath } from '@shared/api-ipc/knowledge';
 import { useNavigate } from 'react-router-dom';
 
 export function CreateKnowledge() {

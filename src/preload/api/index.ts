@@ -3,22 +3,20 @@
 import { ipcRenderer, webUtils } from 'electron';
 import type { Conversation } from '../../main/api-ipc/conversation-history/validator';
 import { OLLAMA_CHECK_EXISTS, OLLAMA_START_SERVER } from '@shared/api-ipc/ollama';
-import { IpcResult } from '@shared/api-ipc/types';
+import type { IpcResult } from '@shared/api-ipc/types';
 import { ApiIpcError } from '@shared/api-ipc/error';
-import {
-  CONFIGURATION_GET,
-  CONFIGURATION_WRITE,
-  Configuration,
-} from '@shared/api-ipc/configuration';
-import { SYSTEM_GET_DETAILS, SystemGetDetails } from '@shared/api-ipc/system';
-import { Persona, PERSONAS_GET, PERSONAS_WRITE } from '@shared/api-ipc/personas';
+import type { Configuration } from '@shared/api-ipc/configuration';
+import { CONFIGURATION_GET, CONFIGURATION_WRITE } from '@shared/api-ipc/configuration';
+import type { SystemGetDetails } from '@shared/api-ipc/system';
+import { SYSTEM_GET_DETAILS } from '@shared/api-ipc/system';
+import type { Persona } from '@shared/api-ipc/personas';
+import { PERSONAS_GET, PERSONAS_WRITE } from '@shared/api-ipc/personas';
+import type { KnowledgeSet, SourcePath } from '@shared/api-ipc/knowledge';
 import {
   CREATE_KNOWLEDGE_SET,
   LIST_KNOWLEDGE_SETS,
   UPDATE_KNOWLEDGE_SET,
   DELETE_KNOWLEDGE_SET,
-  KnowledgeSet,
-  SourcePath,
 } from '@shared/api-ipc/knowledge';
 import { OPEN_DIRECTORY_DIALOG } from '@shared/api-ipc/dialog';
 

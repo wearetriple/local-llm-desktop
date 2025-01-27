@@ -1,5 +1,6 @@
 import { ollamaApi } from '@renderer/services/ollama/api';
-import { ConversationHistoryProvider, Message } from '@renderer/state/conversation-history';
+import type { Message } from '@renderer/state/conversation-history';
+import { ConversationHistoryProvider } from '@renderer/state/conversation-history';
 import { OllamaContainer } from '@renderer/state/ollama';
 import { PersonasContainer } from '@renderer/state/personas';
 import { useRef, useState } from 'react';

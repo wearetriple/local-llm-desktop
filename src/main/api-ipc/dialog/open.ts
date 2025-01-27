@@ -1,5 +1,6 @@
-import { IpcResult } from '@shared/api-ipc/types';
-import { BrowserWindow, dialog } from 'electron';
+import type { IpcResult } from '@shared/api-ipc/types';
+import type { BrowserWindow } from 'electron';
+import { dialog } from 'electron';
 
 export async function showSelectDirectoryDialog(
   window: BrowserWindow,

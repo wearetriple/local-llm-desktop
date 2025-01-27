@@ -1,8 +1,8 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { KnowledgeSet, SourcePath } from '@shared/api-ipc/knowledge';
+import type { KnowledgeSet, SourcePath } from '@shared/api-ipc/knowledge';
 import { APP_CONFIG_PATH } from '../../constants';
-import { IpcResult } from '@shared/api-ipc/types';
+import type { IpcResult } from '@shared/api-ipc/types';
 
 const KNOWLEDGE_DIR = 'knowledge';
 
