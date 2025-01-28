@@ -19,6 +19,8 @@ import {
   DELETE_KNOWLEDGE_SET,
 } from '@shared/api-ipc/knowledge';
 import { OPEN_DIRECTORY_DIALOG } from '@shared/api-ipc/dialog';
+import type { SearchResult } from '@shared/api-ipc/embeddings';
+import { EMBEDDINGS_SEARCH } from '@shared/api-ipc/embeddings';
 
 function logger(..._arguments: unknown[]) {
   if (process.env['NODE_ENV'] === 'development') {
@@ -108,4 +110,11 @@ export async function openDirectoryDialog(): Promise<string[] | null> {
 export function getFilePath(file: File): string {
   const result = webUtils.getPathForFile(file);
   return result;
+}
+
+export async function searchEmbeddings(
+  query: string,
+  knowledgeSetIds: string[],
+): Promise<SearchResult[]> {
+  return await invokeIpc(EMBEDDINGS_SEARCH, query, knowledgeSetIds);
 }

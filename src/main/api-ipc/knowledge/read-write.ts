@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import type { KnowledgeSet, SourcePath } from '@shared/api-ipc/knowledge';
 import { APP_CONFIG_PATH } from '../../constants';
 import type { IpcResult } from '@shared/api-ipc/types';
+import { embeddingsManager } from '../../embeddings/manager';
 
 const KNOWLEDGE_DIR = 'knowledge';
 
@@ -67,6 +68,10 @@ export async function createKnowledgeSet(
     };
 
     await writeKnowledgeInfo(setPath, knowledgeSet);
+
+    // Generate embeddings for the new knowledge set
+    await embeddingsManager.generateEmbeddings(knowledgeSet);
+
     return { data: undefined };
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Unknown error' };
@@ -94,6 +99,10 @@ export async function updateKnowledgeSet(
     };
 
     await writeKnowledgeInfo(setPath, updatedSet);
+
+    // Update embeddings for the modified knowledge set
+    await embeddingsManager.generateEmbeddings(updatedSet);
+
     return { data: undefined };
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Unknown error' };

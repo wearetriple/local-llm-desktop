@@ -29,6 +29,8 @@ import {
 import { OPEN_DIRECTORY_DIALOG } from '@shared/api-ipc/dialog';
 import { showSelectDirectoryDialog } from './dialog/open';
 import type { IpcResult } from '@shared/api-ipc/types';
+import { search } from './embeddings/search';
+import { EMBEDDINGS_SEARCH } from '@shared/api-ipc/embeddings';
 
 export function initializeIpcApi() {
   ipcMain.handle('conversation:save', async (_, conversation) => saveConversation(conversation));
@@ -56,4 +58,7 @@ export function initializeIpcApi() {
     }
     return showSelectDirectoryDialog(window);
   });
+  ipcMain.handle(EMBEDDINGS_SEARCH, async (_, query, knowledgeSetIds) =>
+    search(query, knowledgeSetIds),
+  );
 }
