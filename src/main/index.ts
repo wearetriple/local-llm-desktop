@@ -4,6 +4,7 @@ import path from 'node:path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import { initializeIpcApi } from './api-ipc/initialize-api';
+import { initialize as initializeEmbeddings } from './embeddings/initialize';
 
 function createWindow(): void {
   // Create the browser window.
@@ -56,8 +57,9 @@ void app.whenReady().then(() => {
   });
 
   initializeIpcApi();
-
   createWindow();
+
+  void initializeEmbeddings();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

@@ -20,6 +20,10 @@ export function FileDropzone({ mimeTypes, filesSelected }: Properties) {
     }
   };
 
+  const validateFiles = (files: File[]): boolean => {
+    return files.every((file) => mimeTypes.includes(file.type));
+  };
+
   useEffect(() => {
     if (!dropzoneReference.current) {
       return;
@@ -38,11 +42,19 @@ export function FileDropzone({ mimeTypes, filesSelected }: Properties) {
 
     const handleDrop = (event: DragEvent) => {
       event.preventDefault();
-      setState('idle');
 
       const files = event.dataTransfer?.files;
       if (files) {
-        void filesSelected([...files]);
+        const fileArray = [...files];
+        const isValid = validateFiles(fileArray);
+        setState(isValid ? 'accept' : 'reject');
+
+        if (isValid) {
+          void filesSelected(fileArray);
+        }
+
+        // Reset state after a short delay
+        setTimeout(() => setState('idle'), 1000);
       }
     };
 
@@ -71,7 +83,16 @@ export function FileDropzone({ mimeTypes, filesSelected }: Properties) {
       return;
     }
 
-    void filesSelected([...event.target.files]);
+    const fileArray = [...event.target.files];
+    const isValid = validateFiles(fileArray);
+    setState(isValid ? 'accept' : 'reject');
+
+    if (isValid) {
+      void filesSelected(fileArray);
+    }
+
+    // Reset state after a short delay
+    setTimeout(() => setState('idle'), 1000);
 
     if (uploadReference.current) {
       uploadReference.current.value = '';

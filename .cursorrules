@@ -1,0 +1,2 @@
+Code is written in Typescript. @Mantine7 is used for the UI, use those components if possible.
+Typescript types are preferred over interfaces.

@@ -6,6 +6,7 @@ import type { SourcePath } from '@shared/api-ipc/knowledge';
 import { IconFile, IconFolder, IconTrash } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { logger } from '@renderer/core/logger';
+import { MIME_TYPES } from '@shared/files/info';
 
 type FormValues = {
   name: string;
@@ -104,7 +105,7 @@ export function KnowledgeForm({ initialValues, onSubmit }: KnowledgeFormProperti
         <Button variant="outline" onClick={selectFolders} leftSection={<IconFolder />}>
           Add folder
         </Button>
-        <FileDropzone mimeTypes={['text/plain']} filesSelected={addFiles} />
+        <FileDropzone mimeTypes={Object.values(MIME_TYPES).flat()} filesSelected={addFiles} />
 
         <Group justify="flex-end" mt="md">
           <Button variant="subtle" onClick={() => void navigate(-1)}>
