@@ -26,11 +26,12 @@ import {
   listKnowledgeSets,
   updateKnowledgeSet,
 } from './knowledge/read-write';
-import { OPEN_DIRECTORY_DIALOG } from '@shared/api-ipc/dialog';
+import { OPEN_DIRECTORY_DIALOG, OPEN_FILE_IN_OS } from '@shared/api-ipc/dialog';
 import { showSelectDirectoryDialog } from './dialog/open';
 import type { IpcResult } from '@shared/api-ipc/types';
 import { search } from './embeddings/search';
 import { EMBEDDINGS_SEARCH } from '@shared/api-ipc/embeddings';
+import { openFileInOS } from './files/open';
 
 export function initializeIpcApi() {
   ipcMain.handle('conversation:save', async (_, conversation) => saveConversation(conversation));
@@ -61,4 +62,5 @@ export function initializeIpcApi() {
   ipcMain.handle(EMBEDDINGS_SEARCH, async (_, query, knowledgeSetIds) =>
     search(query, knowledgeSetIds),
   );
+  ipcMain.on(OPEN_FILE_IN_OS, (_, filePath: string) => void openFileInOS(filePath));
 }

@@ -26,6 +26,9 @@ function createWindow(): void {
     if (is.dev) {
       mainWindow.webContents.openDevTools();
     }
+
+    // TODO find a better way to place this code, doing it in the app ready will block the showing of the main window
+    void initializeEmbeddings();
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -58,8 +61,6 @@ void app.whenReady().then(() => {
 
   initializeIpcApi();
   createWindow();
-
-  void initializeEmbeddings();
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

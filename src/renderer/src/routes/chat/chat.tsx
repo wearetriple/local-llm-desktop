@@ -23,14 +23,25 @@ import { NameAvatar } from '@renderer/components/atom/name-avatar';
 import { ConfigurationContainer, MODELS } from '@renderer/state/configuration';
 import { TASK_LABELS } from '@shared/api-ipc/configuration';
 import { OllamaContainer } from '@renderer/state/ollama';
+import { KnowledgeContainer } from '@renderer/state/knowledge';
+import type { KnowledgeSet } from '@shared/api-ipc/knowledge';
+import { KnowledgeSources } from '@renderer/components/organisms/knowledge-sources/knowledge-sources';
 
 export default function Chat() {
   const { messages, sendMessage, typingEnabled, setSelectedModel, selectedModel } = useChat();
   const { configuration } = ConfigurationContainer.useContainer();
   const { models } = OllamaContainer.useContainer();
   const { activePersona } = PersonasContainer.useContainer();
+  const { knowledgeSets } = KnowledgeContainer.useContainer();
   const viewportReference = useRef<HTMLDivElement>(null);
   const [inputValue, setInputValue] = useState('');
+
+  const knowledgeSetMap: Map<string, KnowledgeSet> = useMemo(() => {
+    if (!knowledgeSets) {
+      return new Map<string, KnowledgeSet>();
+    }
+    return new Map(knowledgeSets.map((set) => [set.id, set]));
+  }, [knowledgeSets]);
 
   // Update the scroll behavior to be more reliable
   useEffect(() => {
@@ -142,6 +153,14 @@ export default function Chat() {
                     typing...
                   </Text>
                 )}
+                {message.role === 'assistant' &&
+                  message.documentsUsed &&
+                  message.documentsUsed.length > 0 && (
+                    <KnowledgeSources
+                      documentsUsed={message.documentsUsed}
+                      knowledgeSetMap={knowledgeSetMap}
+                    />
+                  )}
               </Paper>
             ))
           )}

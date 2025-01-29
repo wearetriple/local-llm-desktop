@@ -4,6 +4,7 @@ export const messageSchema = z.object({
   role: z.enum(['user', 'assistant', 'system']),
   content: z.string().min(1),
   timestamp: z.string().nonempty(),
+  documentsUsed: z.array(z.object({ knowledgeSetId: z.string(), file: z.string() })).optional(),
 });
 
 export const conversationSchema = z
