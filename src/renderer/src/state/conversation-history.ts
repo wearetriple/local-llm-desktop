@@ -11,6 +11,7 @@ export type Message = {
   content: string;
   streaming?: boolean;
   when: Date;
+  documentsUsed?: Array<{ knowledgeSetId: string; file: string }>;
 };
 
 export type Conversation = {
@@ -29,6 +30,7 @@ function mapConversationToStoredConversation(conversation: Conversation): Stored
       role: message.role,
       content: message.content,
       timestamp: message.when.toISOString(),
+      documentsUsed: message.documentsUsed,
     })),
     createdAt: conversation.createdAt.toISOString(),
     updatedAt: conversation.updatedAt.toISOString(),
@@ -83,6 +85,7 @@ function useConversationHistory() {
             role: storedMessage.role,
             content: storedMessage.content,
             when: new Date(storedMessage.timestamp),
+            documentsUsed: storedMessage.documentsUsed,
           })),
           createdAt: new Date(storedConversation.createdAt),
           updatedAt: new Date(storedConversation.updatedAt),

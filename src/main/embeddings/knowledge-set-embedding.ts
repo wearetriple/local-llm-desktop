@@ -2,12 +2,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { Worker } from 'node:worker_threads';
 import { logger } from '../core/logger';
 import type { KnowledgeSet } from '@shared/api-ipc/knowledge';
 import { isValidFileExtension } from '@shared/files/info';
-import officeParser from 'officeparser';
 import { EmbeddingIndex, getEmbedding } from 'client-vector-search';
-import { createOverlappingChunks } from './text-chunking';
+import { fileURLToPath } from 'node:url';
 
 export type EmbeddingData = {
   text: string;
@@ -39,7 +39,13 @@ export type EmbeddingState = {
       knowledgeSetId: string;
     };
   }>;
+  progress: {
+    [filePath: string]: number;
+  };
 };
+
+// Get the directory name of the current module
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class KnowledgeSetEmbedding {
   private embeddingIndex: EmbeddingIndex;
@@ -57,6 +63,7 @@ export class KnowledgeSetEmbedding {
       lastGeneratedAt: null,
       lastLoadedAt: null,
       entries: [],
+      progress: {},
     };
   }
 
@@ -78,59 +85,71 @@ export class KnowledgeSetEmbedding {
     return contentFiles;
   }
 
-  private async processFile(filePath: string): Promise<void> {
-    try {
-      logger(`Processing file ${filePath}`);
+  private processFilesWithWorker(files: Array<{ filePath: string; knowledgeSetId: string }>) {
+    // In production, the worker file will be in the same directory as this file
+    const workerPath = path.join(__dirname, 'embedding.worker.js');
 
-      const fileExtension = filePath.split('.').pop() || '';
+    logger('Starting worker at path:', workerPath);
 
-      let content: string;
-      try {
-        const rawContent =
-          fileExtension === 'txt'
-            ? await fs.readFile(filePath, 'utf8')
-            : await officeParser.parseOfficeAsync(filePath);
+    const worker = new Worker(workerPath, {
+      workerData: { files },
+    });
 
-        // Ensure content is a string and handle potential null/undefined
-        content = typeof rawContent === 'string' ? rawContent : String(rawContent || '');
-      } catch (parseError) {
-        logger(`Error parsing file ${filePath}:`, parseError);
-        return;
-      }
+    worker.on(
+      'message',
+      (message: {
+        type: 'result' | 'progress' | 'error' | 'complete';
+        filePath?: string;
+        results?: Array<{
+          chunk: string;
+          embedding: number[];
+          source: string;
+          knowledgeSetId: string;
+        }>;
+        progress?: number;
+        error?: string;
+      }) => {
+        switch (message.type) {
+          case 'result': {
+            if (message.results && message.filePath) {
+              for (const result of message.results) {
+                this.embeddingIndex.add({
+                  embedding: result.embedding,
+                  source: result.source,
+                  knowledgeSetId: result.knowledgeSetId,
+                  chunk: result.chunk,
+                });
+              }
+              this.state.progress[message.filePath] = 100;
+              void this.saveState();
+            }
+            break;
+          }
 
-      if (!content.trim()) {
-        logger(`No content found in file ${filePath}`);
-        return;
-      }
+          case 'progress': {
+            if (message.filePath && typeof message.progress === 'number') {
+              this.state.progress[message.filePath] = message.progress;
+              void this.saveState();
+            }
+            break;
+          }
 
-      logger('Read content', content.slice(0, 12).replaceAll('\n', ' '), '...');
+          case 'error': {
+            if (message.filePath) {
+              logger(`Error processing file ${message.filePath}:`, message.error);
+              this.state.progress[message.filePath] = 100; // Mark as complete even if error
+              void this.saveState();
+            }
+            break;
+          }
 
-      const chunks = createOverlappingChunks(content, {
-        chunkSize: 1000,
-        overlapPercentage: 0.1,
-      });
-
-      if (chunks.length === 0) {
-        logger(`No valid chunks created for file ${filePath}`);
-        return;
-      }
-
-      for (const chunk of chunks) {
-        if (!chunk.trim()) {
-          continue;
+          case 'complete': {
+            logger('Worker complete');
+            break;
+          }
         }
-
-        const embedding = await getEmbedding(chunk);
-        this.embeddingIndex.add({
-          embedding,
-          source: filePath,
-          knowledgeSetId: this.knowledgeSetId,
-          chunk,
-        });
-      }
-    } catch (error) {
-      logger(`Error processing file ${filePath}:`, error);
-    }
+      },
+    );
   }
 
   private getEmbeddingsFilePath(): string {
@@ -147,29 +166,38 @@ export class KnowledgeSetEmbedding {
     }
 
     this.state.isGenerating = true;
+    this.state.progress = {};
     await this.saveState();
 
     this.embeddingIndex.clear();
 
     try {
-      // Process each source
+      const filesToProcess: Array<{ filePath: string; knowledgeSetId: string }> = [];
+
+      // Collect all files to process
       for (const source of knowledgeSet.sources) {
         try {
           if (source.type === 'file') {
-            await this.processFile(source.path);
+            filesToProcess.push({
+              filePath: source.path,
+              knowledgeSetId: this.knowledgeSetId,
+            });
           } else if (source.type === 'directory') {
             const textFiles = await this.scanDirectory(source.path);
-            for (const filePath of textFiles) {
-              await this.processFile(filePath);
-            }
+            filesToProcess.push(
+              ...textFiles.map((filePath) => ({
+                filePath,
+                knowledgeSetId: this.knowledgeSetId,
+              })),
+            );
           }
         } catch (error) {
-          logger(`Error processing source ${source.path}:`, error);
+          logger(`Error collecting files from source ${source.path}:`, error);
         }
       }
 
-      // Save embeddings to disk
-      await this.saveEmbeddings();
+      // Process all files with a single worker
+      this.processFilesWithWorker(filesToProcess);
 
       this.state.lastGeneratedAt = new Date().toISOString();
     } finally {
@@ -180,12 +208,7 @@ export class KnowledgeSetEmbedding {
 
   private async saveState(): Promise<void> {
     const filePath = this.getEmbeddingsFilePath();
-
     await fs.writeFile(filePath, JSON.stringify(this.state, null, 2), 'utf8');
-  }
-
-  private async saveEmbeddings(): Promise<void> {
-    await this.saveState();
   }
 
   public async loadEmbeddings(): Promise<void> {
@@ -205,6 +228,7 @@ export class KnowledgeSetEmbedding {
         ...savedState,
         isGenerating: this.state.isGenerating,
         isLoading: false,
+        progress: this.state.progress,
       };
 
       this.state.lastLoadedAt = new Date().toISOString();

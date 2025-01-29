@@ -18,7 +18,7 @@ import {
   UPDATE_KNOWLEDGE_SET,
   DELETE_KNOWLEDGE_SET,
 } from '@shared/api-ipc/knowledge';
-import { OPEN_DIRECTORY_DIALOG } from '@shared/api-ipc/dialog';
+import { OPEN_DIRECTORY_DIALOG, OPEN_FILE_IN_OS } from '@shared/api-ipc/dialog';
 import type { SearchResult } from '@shared/api-ipc/embeddings';
 import { EMBEDDINGS_SEARCH } from '@shared/api-ipc/embeddings';
 
@@ -117,4 +117,8 @@ export async function searchEmbeddings(
   knowledgeSetIds: string[],
 ): Promise<SearchResult[]> {
   return await invokeIpc(EMBEDDINGS_SEARCH, query, knowledgeSetIds);
+}
+
+export function openFileInOS(filePath: string) {
+  return ipcRenderer.send(OPEN_FILE_IN_OS, filePath);
 }

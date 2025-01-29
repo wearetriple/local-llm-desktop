@@ -12,11 +12,14 @@ async function requestReply(
   selectedKnowledgeSets: string[],
 ) {
   if (selectedKnowledgeSets.length === 0) {
-    return ollamaApi.chat({
-      model,
-      messages,
-      stream: true,
-    });
+    return {
+      response: await ollamaApi.chat({
+        model,
+        messages,
+        stream: true,
+      }),
+      documents: [],
+    };
   }
   const documents = await window.api.searchEmbeddings(
     messages.at(-1)?.content ?? '',
@@ -40,11 +43,14 @@ async function requestReply(
   // Insert the context message right before the user's last message
   messages.splice(-1, 0, contextMessage);
 
-  return ollamaApi.chat({
-    model,
-    messages,
-    stream: true,
-  });
+  return {
+    response: await ollamaApi.chat({
+      model,
+      messages,
+      stream: true,
+    }),
+    documents,
+  };
 }
 
 export function useChat() {
@@ -71,7 +77,7 @@ export function useChat() {
       { role: 'user', content: message },
     ];
 
-    const response = await requestReply(
+    const { response, documents } = await requestReply(
       selectedModelReference.current,
       activePersona
         ? [{ role: 'system', content: activePersona.prompt }, ...messagesToSend]
@@ -89,6 +95,10 @@ export function useChat() {
             content: part.message.content,
             streaming: true,
             when: new Date(part.created_at),
+            documentsUsed: documents.map((document) => ({
+              knowledgeSetId: document.knowledgeSetId,
+              file: document.file,
+            })),
           },
         ]);
         streamBuffer.current = part.message.content;

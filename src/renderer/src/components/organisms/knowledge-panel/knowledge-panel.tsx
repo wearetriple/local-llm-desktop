@@ -9,7 +9,6 @@ import {
   ActionIcon,
   Modal,
   Box,
-  UnstyledButton,
 } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -92,91 +91,88 @@ export function KnowledgePanel() {
                 border: selectedSets.includes(knowledge.id)
                   ? '1px solid var(--mantine-color-blue-filled)'
                   : '1px solid transparent',
+                cursor: 'pointer',
               }}
+              onClick={() => toggleKnowledgeSet(knowledge.id)}
             >
-              <UnstyledButton
-                onClick={() => toggleKnowledgeSet(knowledge.id)}
-                style={{ width: '100%' }}
-              >
-                <Group align="center" wrap="nowrap">
-                  <Box
-                    className="knowledge-icon"
+              <Group align="center" wrap="nowrap">
+                <Box
+                  className="knowledge-icon"
+                  style={{
+                    position: 'relative',
+                    width: 40,
+                    height: 40,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <IconFolder
+                    size={24}
+                    fill={
+                      selectedSets.includes(knowledge.id)
+                        ? 'var(--mantine-color-blue-6)'
+                        : 'inherit'
+                    }
+                    className="folder-icon"
                     style={{
-                      position: 'relative',
-                      width: 40,
-                      height: 40,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      color: selectedSets.includes(knowledge.id)
+                        ? 'var(--mantine-color-blue-6)'
+                        : 'inherit',
                     }}
-                  >
-                    <IconFolder
+                  />
+                  {selectedSets.includes(knowledge.id) ? (
+                    <IconCheck
                       size={24}
-                      fill={
-                        selectedSets.includes(knowledge.id)
-                          ? 'var(--mantine-color-blue-6)'
-                          : 'inherit'
-                      }
-                      className="folder-icon"
-                      style={{
-                        color: selectedSets.includes(knowledge.id)
-                          ? 'var(--mantine-color-blue-6)'
-                          : 'inherit',
-                      }}
+                      className="check-icon"
+                      style={{ color: 'var(--mantine-color-blue-6)' }}
                     />
-                    {selectedSets.includes(knowledge.id) ? (
-                      <IconCheck
-                        size={24}
-                        className="check-icon"
-                        style={{ color: 'var(--mantine-color-blue-6)' }}
-                      />
-                    ) : (
-                      <IconSquare size={24} className="check-icon" />
-                    )}
-                  </Box>
-                  <Box style={{ flex: 1, minWidth: 0 }}>
-                    <Text size="sm" fw={500} lineClamp={1}>
-                      {knowledge.name}
-                    </Text>
-                  </Box>
-                  <Group
-                    visibleFrom="sm"
-                    gap="xs"
-                    style={{
-                      position: 'absolute',
-                      right: 8,
-                      top: 8,
-                      background: 'var(--mantine-color-dark-7)',
-                      borderRadius: 4,
-                      padding: 4,
-                      opacity: 0,
-                      transition: 'opacity 0.2s',
-                      zIndex: 2,
-                    }}
-                    className="knowledge-actions"
-                    onClick={(event) => event.stopPropagation()}
+                  ) : (
+                    <IconSquare size={24} className="check-icon" />
+                  )}
+                </Box>
+                <Box style={{ flex: 1, minWidth: 0 }}>
+                  <Text size="sm" fw={500} lineClamp={1}>
+                    {knowledge.name}
+                  </Text>
+                </Box>
+                <Group
+                  visibleFrom="sm"
+                  gap="xs"
+                  style={{
+                    position: 'absolute',
+                    right: 8,
+                    top: 8,
+                    background: 'var(--mantine-color-dark-7)',
+                    borderRadius: 4,
+                    padding: 4,
+                    opacity: 0,
+                    transition: 'opacity 0.2s',
+                    zIndex: 2,
+                  }}
+                  className="knowledge-actions"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <ActionIcon
+                    size="sm"
+                    variant="subtle"
+                    onClick={() => navigate(`/knowledge/edit/${knowledge.id}`)}
                   >
-                    <ActionIcon
-                      size="sm"
-                      variant="subtle"
-                      onClick={() => navigate(`/knowledge/edit/${knowledge.id}`)}
-                    >
-                      <IconEdit size={16} />
-                    </ActionIcon>
-                    <ActionIcon
-                      size="sm"
-                      variant="subtle"
-                      color="red"
-                      onClick={() => {
-                        setKnowledgeToDelete(knowledge.id);
-                        setDeleteModalOpen(true);
-                      }}
-                    >
-                      <IconTrash size={16} />
-                    </ActionIcon>
-                  </Group>
+                    <IconEdit size={16} />
+                  </ActionIcon>
+                  <ActionIcon
+                    size="sm"
+                    variant="subtle"
+                    color="red"
+                    onClick={() => {
+                      setKnowledgeToDelete(knowledge.id);
+                      setDeleteModalOpen(true);
+                    }}
+                  >
+                    <IconTrash size={16} />
+                  </ActionIcon>
                 </Group>
-              </UnstyledButton>
+              </Group>
             </Paper>
           ))}
         </Stack>
