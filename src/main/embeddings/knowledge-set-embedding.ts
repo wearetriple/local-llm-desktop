@@ -7,7 +7,7 @@ import { logger } from '../core/logger';
 import type { KnowledgeSet } from '@shared/api-ipc/knowledge';
 import { isValidFileExtension } from '@shared/files/info';
 import { EmbeddingIndex, getEmbedding } from 'client-vector-search';
-import { fileURLToPath } from 'node:url';
+import embeddingWorker from './embedding.worker?modulePath';
 
 export type EmbeddingData = {
   text: string;
@@ -43,9 +43,6 @@ export type EmbeddingState = {
     [filePath: string]: number;
   };
 };
-
-// Get the directory name of the current module
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export class KnowledgeSetEmbedding {
   private embeddingIndex: EmbeddingIndex;
@@ -86,12 +83,9 @@ export class KnowledgeSetEmbedding {
   }
 
   private processFilesWithWorker(files: Array<{ filePath: string; knowledgeSetId: string }>) {
-    // In production, the worker file will be in the same directory as this file
-    const workerPath = path.join(__dirname, 'embedding.worker.js');
+    logger('Starting worker at path:', embeddingWorker);
 
-    logger('Starting worker at path:', workerPath);
-
-    const worker = new Worker(workerPath, {
+    const worker = new Worker(embeddingWorker, {
       workerData: { files },
     });
 
