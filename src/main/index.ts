@@ -7,6 +7,7 @@ import { initializeIpcApi } from './api-ipc/initialize-api';
 import { initialize as initializeEmbeddings } from './embeddings/initialize';
 import { initialize as initializeModels } from './models/initialize';
 import { logger } from './core/logger';
+import { getAutoUpdater } from './core/auto-updater';
 
 function createWindow(): void {
   // Create the browser window.
@@ -76,6 +77,8 @@ void app.whenReady().then(() => {
       createWindow();
     }
   });
+
+  void getAutoUpdater().checkForUpdatesAndNotify();
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

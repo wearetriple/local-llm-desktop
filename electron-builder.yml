@@ -39,5 +39,6 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: s3
+  bucket: local-llm-desktop
+  endpoint: https://e248ad41da6f4c8aa266c2ab6c9d04df.r2.cloudflarestorage.com
