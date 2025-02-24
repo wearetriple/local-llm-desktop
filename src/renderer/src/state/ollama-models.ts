@@ -1,9 +1,9 @@
 import type { Configuration } from '@shared/api-ipc/configuration';
 import { useRef, useState } from 'react';
 import { createContainer } from 'unstated-next';
-import { MODELS } from './configuration';
 import { ollamaApi, pullModel } from '@renderer/services/ollama/api';
 import type { ModelResponse } from 'ollama';
+import type { ModelsList } from '@shared/api-ipc/models';
 
 export interface ModelDownloadStatus {
   modelTag: string;
@@ -34,13 +34,16 @@ function useOllamaModels() {
   const modelsReference = useRef<ModelResponse[]>([]);
   modelsReference.current = models;
 
-  const initializeDownloadStatus = async (configuration: Configuration) => {
+  const initializeDownloadStatus = async (
+    configuration: Configuration,
+    preselectedModels: ModelsList['models'],
+  ) => {
     const listResponse = await ollamaApi.list();
     setModels(listResponse.models);
     modelsReference.current = listResponse.models;
 
     const taskStatus: TaskDownloadStatus[] = configuration.tasks.map((task) => {
-      const taskModels = MODELS[configuration.system].models
+      const taskModels = preselectedModels[configuration.system].models
         .filter((model) => model.tasks.includes(task))
         .map((model) => ({
           modelTag: model.modelTag,

@@ -5,6 +5,8 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
 import { initializeIpcApi } from './api-ipc/initialize-api';
 import { initialize as initializeEmbeddings } from './embeddings/initialize';
+import { initialize as initializeModels } from './models/initialize';
+import { logger } from './core/logger';
 
 function createWindow(): void {
   // Create the browser window.
@@ -27,8 +29,13 @@ function createWindow(): void {
       mainWindow.webContents.openDevTools();
     }
 
-    // TODO find a better way to place this code, doing it in the app ready will block the showing of the main window
-    void initializeEmbeddings();
+    // Initialize embeddings and models
+    void initializeEmbeddings().catch((error) => {
+      logger('Failed to initialize embeddings:', error);
+    });
+    void initializeModels().catch((error) => {
+      logger('Failed to initialize models:', error);
+    });
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {

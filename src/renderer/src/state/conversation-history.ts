@@ -3,7 +3,6 @@ import { createContainer } from 'unstated-next';
 import type { Conversation as StoredConversation } from 'src/main/api-ipc/conversation-history/validator';
 import { logger } from '@renderer/core/logger';
 import { ConfigurationContainer } from './configuration';
-import { MODELS } from './configuration';
 import type { ErrorResponse, GenerateTitleResponse } from '../worker';
 
 export type Message = {
@@ -41,7 +40,7 @@ function useConversationHistory() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
-  const { configuration } = ConfigurationContainer.useContainer();
+  const { configuration, models: applicationModelsList } = ConfigurationContainer.useContainer();
 
   const currentConversationReference = useRef(currentConversation);
   const messagesReference = useRef<Message[]>(messages);
@@ -126,9 +125,9 @@ function useConversationHistory() {
         setCurrentConversation(newConversation);
         currentConversationReference.current = newConversation;
 
-        if (configuration && updatedMessages[0]) {
-          const generalModel = MODELS[configuration.system].models.find((model) =>
-            model.tasks.includes('general'),
+        if (configuration && applicationModelsList && updatedMessages[0]) {
+          const generalModel = applicationModelsList.models[configuration.system].models.find(
+            (model) => model.tasks.includes('general'),
           );
           if (generalModel) {
             // Initialize the web worker

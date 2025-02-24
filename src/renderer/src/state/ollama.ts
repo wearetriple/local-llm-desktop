@@ -3,14 +3,13 @@ import { ollamaApi } from '@renderer/services/ollama/api';
 import { useEffect, useState } from 'react';
 import { createContainer } from 'unstated-next';
 import { ConfigurationContainer } from './configuration';
-import { MODELS } from './configuration';
 import type { ModelResponse } from 'ollama';
 
 function useOllama() {
   const [online, setOnline] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [models, setModels] = useState<ModelResponse[]>([]);
-  const { configuration } = ConfigurationContainer.useContainer();
+  const { configuration, models: applicationModelsList } = ConfigurationContainer.useContainer();
 
   async function checkStatus() {
     try {
@@ -24,12 +23,12 @@ function useOllama() {
   }
 
   function areAllRequiredModelsAvailable(): boolean {
-    if (!configuration) {
+    if (!configuration || !applicationModelsList) {
       return false;
     }
 
     const requiredModels = new Set(
-      MODELS[configuration.system].models
+      applicationModelsList.models[configuration.system].models
         .filter((model) => model.tasks.some((task) => configuration.tasks.includes(task)))
         .map((model) => model.modelTag),
     );

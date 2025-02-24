@@ -20,7 +20,7 @@ import { CodeBlock } from '@renderer/components/molecules/code-block';
 import { BotIcon } from '@renderer/components/atom/bot-icon';
 import { PersonasContainer } from '@renderer/state/personas';
 import { NameAvatar } from '@renderer/components/atom/name-avatar';
-import { ConfigurationContainer, MODELS } from '@renderer/state/configuration';
+import { ConfigurationContainer } from '@renderer/state/configuration';
 import { TASK_LABELS } from '@shared/api-ipc/configuration';
 import { OllamaContainer } from '@renderer/state/ollama';
 import { KnowledgeContainer } from '@renderer/state/knowledge';
@@ -29,7 +29,7 @@ import { KnowledgeSources } from '@renderer/components/organisms/knowledge-sourc
 
 export default function Chat() {
   const { messages, sendMessage, typingEnabled, setSelectedModel, selectedModel } = useChat();
-  const { configuration } = ConfigurationContainer.useContainer();
+  const { configuration, models: applicationModelsList } = ConfigurationContainer.useContainer();
   const { models } = OllamaContainer.useContainer();
   const { activePersona } = PersonasContainer.useContainer();
   const { knowledgeSets } = KnowledgeContainer.useContainer();
@@ -57,11 +57,11 @@ export default function Chat() {
   }, [messages]);
 
   const taskOptions: { value: string; label: string }[] = useMemo(() => {
-    if (!configuration) {
+    if (!configuration || !applicationModelsList) {
       return [];
     }
 
-    const configurationDefinition = MODELS[configuration.system];
+    const configurationDefinition = applicationModelsList.models[configuration.system];
 
     const modelsToUse = configuration.tasks
       .map((task) => {

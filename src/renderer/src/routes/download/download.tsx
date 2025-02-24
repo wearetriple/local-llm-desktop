@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Stack, Title, Text, Progress, Paper, Group } from '@mantine/core';
 import { ConfigurationContainer } from '@renderer/state/configuration';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,7 @@ import { OllamaModelsContainer } from '@renderer/state/ollama-models';
 
 export function Download() {
   const navigate = useNavigate();
-  const { configuration } = ConfigurationContainer.useContainer();
+  const { configuration, models } = ConfigurationContainer.useContainer();
   const { downloadStatus, initializeDownloadStatus, downloadModels } =
     OllamaModelsContainer.useContainer();
 
@@ -16,11 +16,11 @@ export function Download() {
         await navigate('/configure');
         return;
       }
-      if (configuration === undefined) {
+      if (configuration === undefined || !models) {
         return; // Wait for configuration to be loaded
       }
 
-      const taskStatus = await initializeDownloadStatus(configuration);
+      const taskStatus = await initializeDownloadStatus(configuration, models.models);
       void downloadModels(taskStatus);
     })();
   }, [configuration]);
@@ -59,8 +59,10 @@ export function Download() {
         )
       : 0;
 
-  const activeTasks = downloadStatus.filter((task) => task.models.length > 0);
-
+  const activeTasks = useMemo(
+    () => downloadStatus.filter((task) => task.models.length > 0),
+    [downloadStatus],
+  );
   const formatProgress = (task: (typeof downloadStatus)[number]) => {
     const progress = getTaskProgress(task);
     return `${progress}%`;
