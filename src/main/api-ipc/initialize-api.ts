@@ -32,6 +32,8 @@ import type { IpcResult } from '@shared/api-ipc/types';
 import { search } from './embeddings/search';
 import { EMBEDDINGS_SEARCH } from '@shared/api-ipc/embeddings';
 import { openFileInOS } from './files/open';
+import { MODELS_FETCH } from '@shared/api-ipc/models';
+import { getModels } from './models/read-write';
 
 export function initializeIpcApi() {
   ipcMain.handle('conversation:save', async (_, conversation) => saveConversation(conversation));
@@ -63,4 +65,5 @@ export function initializeIpcApi() {
     search(query, knowledgeSetIds),
   );
   ipcMain.on(OPEN_FILE_IN_OS, (_, filePath: string) => void openFileInOS(filePath));
+  ipcMain.handle(MODELS_FETCH, async () => getModels());
 }

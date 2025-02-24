@@ -21,6 +21,8 @@ import {
 import { OPEN_DIRECTORY_DIALOG, OPEN_FILE_IN_OS } from '@shared/api-ipc/dialog';
 import type { SearchResult } from '@shared/api-ipc/embeddings';
 import { EMBEDDINGS_SEARCH } from '@shared/api-ipc/embeddings';
+import type { ModelsList } from '@shared/api-ipc/models';
+import { MODELS_FETCH } from '@shared/api-ipc/models';
 
 function logger(..._arguments: unknown[]) {
   if (process.env['NODE_ENV'] === 'development') {
@@ -121,4 +123,8 @@ export async function searchEmbeddings(
 
 export function openFileInOS(filePath: string) {
   return ipcRenderer.send(OPEN_FILE_IN_OS, filePath);
+}
+
+export async function getModels(): Promise<ModelsList> {
+  return await invokeIpc(MODELS_FETCH);
 }

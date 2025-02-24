@@ -10,7 +10,7 @@ export default function Home() {
   const { online, refresh, areAllRequiredModelsAvailable } = OllamaContainer.useContainer();
   const [displayError, setDisplayError] = useState('');
   const [startLoader, setStartLoader] = useState<boolean>(false);
-  const { configuration } = ConfigurationContainer.useContainer();
+  const { configuration, models } = ConfigurationContainer.useContainer();
 
   const navigate = useNavigate();
 
@@ -33,7 +33,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (configuration === undefined || !online) {
+    if (configuration === undefined || !online || !models) {
       return;
     }
     if (configuration === null) {
