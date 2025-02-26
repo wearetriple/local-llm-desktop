@@ -45,6 +45,7 @@
     "@mantine/hooks": "^7.15.3",
     "@minchat/react-chat-ui": "^0.16.2",
     "@sentry/electron": "^6.1.0",
+    "@sentry/vite-plugin": "^3.2.1",
     "@tabler/icons-react": "^3.28.1",
     "@themaximalist/vectordb.js": "^0.1.2",
     "client-vector-search": "^0.2.0",
