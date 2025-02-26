@@ -8,6 +8,7 @@ import { initialize as initializeEmbeddings } from './embeddings/initialize';
 import { initialize as initializeModels } from './models/initialize';
 import { logger } from './core/logger';
 import { getAutoUpdater } from './core/auto-updater';
+import { init as initSentry } from '@sentry/electron/main';
 
 function createWindow(): void {
   // Create the browser window.
@@ -92,3 +93,8 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+if (!is.dev) {
+  initSentry({
+    dsn: 'https://7ce24a3e38e7693396017ad1756f035b@sentry.wearetriple.com/87',
+  });
+}
