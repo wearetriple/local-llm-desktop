@@ -125,6 +125,6 @@ export function openFileInOS(filePath: string) {
   return ipcRenderer.send(OPEN_FILE_IN_OS, filePath);
 }
 
-export async function getModels(): Promise<ModelsList> {
+export async function getModels(): Promise<ModelsList['models']> {
   return await invokeIpc(MODELS_FETCH);
 }

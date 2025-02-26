@@ -32,7 +32,7 @@ export function Configure() {
     }
 
     const uniqueTasksForSystemType = [
-      ...new Set(models.models[systemType].models.flatMap((model) => model.tasks)),
+      ...new Set(models[systemType].models.flatMap((model) => model.tasks)),
     ];
     setSelectedTasks(uniqueTasksForSystemType);
   };
@@ -109,7 +109,7 @@ export function Configure() {
                 />
               </Group>
               <Text size="sm" c="dimmed">
-                {models && models.models[type].description}
+                {models && models[type].description}
               </Text>
               <Collapse in={systemType === type}>
                 <Stack gap="xs" mt="sm">
@@ -117,9 +117,9 @@ export function Configure() {
                     Available Models:
                   </Text>
                   {models &&
-                    models.models[type].models.map((model) => (
+                    models[type].models.map((model) => (
                       <Text key={model.modelTag} size="sm">
-                        • {model.name} ({model.parameters} parameters, {model.size})
+                        • {model.name} ({model.parameters} parameters)
                       </Text>
                     ))}
                 </Stack>

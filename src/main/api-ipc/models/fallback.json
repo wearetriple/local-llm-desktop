@@ -1,0 +1,92 @@
+{
+  "version": 2,
+  "models": {
+    "light": {
+      "description": "Models with around 7B parameters or less",
+      "models": [
+        {
+          "name": "Qwen2.5 67B Instruct",
+          "parameters": "7B",
+          "size": "4.7GB",
+          "tasks": ["general"],
+          "modelTag": "hf.co/lmstudio-community/Qwen2.5-7B-Instruct-1M-GGUF"
+        },
+        {
+          "name": "Qwen 2.5 7B Instruct",
+          "parameters": "7B",
+          "size": "4.7GB",
+          "tasks": ["math"],
+          "modelTag": "hf.co/bartowski/Qwen2-VL-7B-Instruct-GGUF"
+        },
+        {
+          "name": "Llama 3.1 8B Instruct",
+          "parameters": "8B",
+          "size": "4.9GB",
+          "tasks": ["coding"],
+          "modelTag": "hf.co/l3utterfly/Llama-3.1-8B-Instruct-gguf"
+        },
+        {
+          "name": "Gemma 2 9B",
+          "parameters": "9B",
+          "size": "4.5GB",
+          "tasks": ["creative-writing"],
+          "modelTag": "hf.co/RichardErkhov/ifable_-_gemma-2-Ifable-9B-gguf"
+        }
+      ],
+      "minimumAvailableMemory": 8
+    },
+    "medium": {
+      "description": "Models with around 14B parameters",
+      "models": [
+        {
+          "name": "Phi-4",
+          "parameters": "14B",
+          "size": "8.9GB",
+          "tasks": ["general"],
+          "modelTag": "hf.co/unsloth/phi-4-GGUF"
+        },
+        {
+          "name": "Qwen2.5 14B Instruct",
+          "parameters": "14B",
+          "size": "9GB",
+          "tasks": ["math"],
+          "modelTag": "hf.co/bartowski/Qwen2.5-14B-Instruct-1M-GGUF"
+        },
+        {
+          "name": "QWEN 2.5 Coder 14B Instruct",
+          "parameters": "14B",
+          "size": "9GB",
+          "tasks": ["coding"],
+          "modelTag": "huggingface.co/bartowski/Qwen2.5-Coder-14B-Instruct-GGUF"
+        }
+      ],
+      "minimumAvailableMemory": 16
+    },
+    "heavy": {
+      "description": "Models with 32B parameters or more",
+      "models": [
+        {
+          "name": "QwQ 32B Preview",
+          "parameters": "32B",
+          "size": "19GB",
+          "tasks": ["general"],
+          "modelTag": "hf.co/bartowski/QwQ-32B-Preview-GGUF"
+        },
+        {
+          "name": "Qwen 2.5 32B Instruct",
+          "parameters": "32B",
+          "tasks": ["math"],
+          "modelTag": "hf.co/bartowski/Qwen2.5-32B-Instruct-GGUF"
+        },
+        {
+          "name": "Qwen 2.5 Coder 32B Instruct",
+          "parameters": "32B",
+          "size": "19GB",
+          "tasks": ["coding", "creative-writing"],
+          "modelTag": "hf.co/bartowski/Qwen2.5-Coder-32B-Instruct-GGUF"
+        }
+      ],
+      "minimumAvailableMemory": 24
+    }
+  }
+}

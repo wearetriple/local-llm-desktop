@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "concurrently --kill-others-on-fail \"npm:lint:*\"",
     "lint:prettier": "prettier --check --log-level=warn src",
-    "lint:tsc": "tsc --noEmit",
+    "lint:tsc": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
     "lint:eslint": "eslint --ext=js,jsx,ts,tsx --max-warnings=0 src",
     "format": "prettier --write src && eslint --ext=js,jsx,ts,tsx --fix src",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",

@@ -61,7 +61,7 @@ export default function Chat() {
       return [];
     }
 
-    const configurationDefinition = applicationModelsList.models[configuration.system];
+    const configurationDefinition = applicationModelsList[configuration.system];
 
     const modelsToUse = configuration.tasks
       .map((task) => {
@@ -69,6 +69,13 @@ export default function Chat() {
           configurationModel.tasks.includes(task),
         );
         if (!configurationModel) {
+          return;
+        }
+        // Only include models that are available in Ollama. We replace :latest with an empty string because that is appended when using hf.co urls
+        const modelIsAvailable = models.some(
+          (m) => m.name.replace(':latest', '') === configurationModel.modelTag,
+        );
+        if (!modelIsAvailable) {
           return;
         }
         return { value: configurationModel.modelTag, label: TASK_LABELS[task] };

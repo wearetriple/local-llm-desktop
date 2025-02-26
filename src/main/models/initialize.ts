@@ -9,7 +9,7 @@ export async function initialize() {
       logger('Failed to check for model updates:', result.error);
       return;
     }
-    logger('Model check complete. Version:', result.data.version);
+    logger('Model check complete.');
   } catch (error) {
     logger('Error during model initialization:', error);
   }

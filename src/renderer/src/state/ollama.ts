@@ -28,7 +28,7 @@ function useOllama() {
     }
 
     const requiredModels = new Set(
-      applicationModelsList.models[configuration.system].models
+      applicationModelsList[configuration.system].models
         .filter((model) => model.tasks.some((task) => configuration.tasks.includes(task)))
         .map((model) => model.modelTag),
     );
