@@ -6,8 +6,10 @@ export const MODELS_WRITE = 'models:write';
 export const ModelSchema = z.object({
   name: z.string(),
   parameters: z.string(),
-  size: z.string(),
-  tasks: z.array(z.enum(['reasoning', 'coding', 'data-analysis', 'creative-writing', 'general'])),
+  size: z.string().optional(),
+  tasks: z.array(
+    z.enum(['reasoning', 'coding', 'math', 'data-analysis', 'creative-writing', 'general']),
+  ),
   modelTag: z.string(),
 });
 

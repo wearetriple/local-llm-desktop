@@ -6,55 +6,12 @@ import type { ModelsList } from '@shared/api-ipc/models';
 import { ModelsListSchema, MODELS_URL } from '@shared/api-ipc/models';
 import { logger } from '../../core/logger';
 import { ZodError } from 'zod';
+import fallbackModels from './fallback.json';
 
 const MODELS_FILE_PATH = path.join(APP_CONFIG_PATH, 'models.json');
 
 // Hardcoded fallback models in case both remote and local fetch fail
-const FALLBACK_MODELS: ModelsList = {
-  version: 1,
-  models: {
-    light: {
-      description: 'Models with memory usage typically less than 8 GB of RAM',
-      models: [
-        {
-          name: 'Llama 3.2',
-          parameters: '1B',
-          size: '1.3GB',
-          tasks: ['general'],
-          modelTag: 'llama3.2:1b',
-        },
-      ],
-      minimumAvailableMemory: 16,
-    },
-    medium: {
-      description: 'Models with memory usage typically from 8 GB to less than 16 GB of RAM',
-      models: [
-        {
-          name: 'Llama 3.2',
-          parameters: '3B',
-          size: '2.0GB',
-          tasks: ['general'],
-          modelTag: 'llama3.2:3b',
-        },
-      ],
-      minimumAvailableMemory: 16,
-    },
-    heavy: {
-      description: 'Models with memory usage of 16 GB of RAM or more but less than 75 GB',
-      models: [
-        {
-          name: 'Gemma 2',
-          parameters: '27B',
-          size: '16GB',
-          tasks: ['general'],
-          modelTag: 'gemma-2:27b',
-        },
-      ],
-
-      minimumAvailableMemory: 16,
-    },
-  },
-};
+const FALLBACK_MODELS: ModelsList = fallbackModels as ModelsList;
 
 async function readLocalModels(): Promise<ModelsList | null> {
   try {
@@ -99,40 +56,61 @@ function isNewerVersion(remote: number, local: number): boolean {
   return remote > local;
 }
 
-export async function getModels(): Promise<IpcResult<ModelsList>> {
+export async function getModels(): Promise<IpcResult<ModelsList['models']>> {
   try {
-    // Try to fetch remote models first
+    let remoteModels: ModelsList | null = null;
+    let localModels: ModelsList | null = null;
+
+    // Try to fetch remote models
     try {
-      const remoteModels = await fetchRemoteModels();
-
-      if (remoteModels) {
-        // Read local models to compare versions
-        const localModels = await readLocalModels();
-
-        // Only update if remote version is newer or no local models exist
-        if (!localModels || isNewerVersion(remoteModels.version, localModels.version)) {
-          await writeModels(remoteModels);
-          return { data: remoteModels };
-        }
-
-        // If local version is newer or same, use local models
-        return { data: localModels };
-      }
+      remoteModels = await fetchRemoteModels();
     } catch (error) {
       logger('Failed to fetch remote models:', error);
     }
 
-    // If remote fetch fails, try to use local models
-    const localModels = await readLocalModels();
-    if (localModels) {
-      return { data: localModels };
+    // Try to read local models
+    try {
+      localModels = await readLocalModels();
+    } catch (error) {
+      logger('Failed to read local models:', error);
     }
 
-    // If both remote and local fail, use fallback
-    return { data: FALLBACK_MODELS };
+    // Check if fallback models have a newer version than both remote and local
+    const fallbackVersion = FALLBACK_MODELS.version;
+    const remoteVersion = remoteModels?.version ?? 0;
+    const localVersion = localModels?.version ?? 0;
+
+    // If fallback version is newer than both remote and local, use fallback
+    if (
+      isNewerVersion(fallbackVersion, remoteVersion) &&
+      isNewerVersion(fallbackVersion, localVersion)
+    ) {
+      logger('Using fallback models as they have a newer version');
+
+      // Write fallback models to local file for future use
+      await writeModels(FALLBACK_MODELS);
+      return { data: FALLBACK_MODELS.models };
+    }
+
+    // If remote models exist and are newer than local, use and save them
+    if (
+      remoteModels &&
+      (!localModels || isNewerVersion(remoteModels.version, localModels.version))
+    ) {
+      await writeModels(remoteModels);
+      return { data: remoteModels.models };
+    }
+
+    // If local models exist, use them
+    if (localModels) {
+      return { data: localModels.models };
+    }
+
+    // If all else fails, use fallback models
+    return { data: FALLBACK_MODELS.models };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     logger('Failed to get models:', message);
-    return { data: FALLBACK_MODELS };
+    return { data: FALLBACK_MODELS.models };
   }
 }

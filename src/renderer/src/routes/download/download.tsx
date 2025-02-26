@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { Stack, Title, Text, Progress, Paper, Group } from '@mantine/core';
+import { Stack, Title, Text, Progress, Paper, Group, Button, Center } from '@mantine/core';
 import { ConfigurationContainer } from '@renderer/state/configuration';
 import { useNavigate } from 'react-router-dom';
 import { OllamaModelsContainer } from '@renderer/state/ollama-models';
@@ -20,7 +20,7 @@ export function Download() {
         return; // Wait for configuration to be loaded
       }
 
-      const taskStatus = await initializeDownloadStatus(configuration, models.models);
+      const taskStatus = await initializeDownloadStatus(configuration, models);
       void downloadModels(taskStatus);
     })();
   }, [configuration]);
@@ -63,6 +63,7 @@ export function Download() {
     () => downloadStatus.filter((task) => task.models.length > 0),
     [downloadStatus],
   );
+
   const formatProgress = (task: (typeof downloadStatus)[number]) => {
     const progress = getTaskProgress(task);
     return `${progress}%`;
@@ -70,6 +71,16 @@ export function Download() {
 
   const formatOverallProgress = () => {
     return `${overallProgress}%`;
+  };
+
+  // Check if at least one model has been completely downloaded
+  const hasAtLeastOneModelCompleted = useMemo(() => {
+    return downloadStatus.some((task) => task.models.some((model) => model.status === 'completed'));
+  }, [downloadStatus]);
+
+  // Handle skip button click
+  const handleSkip = () => {
+    void navigate('/chat');
   };
 
   return (
@@ -142,6 +153,14 @@ export function Download() {
           </Stack>
         </Paper>
       ))}
+
+      <Center mt="md">
+        <Button onClick={handleSkip} disabled={!hasAtLeastOneModelCompleted} color="blue" size="md">
+          {hasAtLeastOneModelCompleted
+            ? 'Skip to Chat'
+            : 'Waiting for at least one model to complete'}
+        </Button>
+      </Center>
     </Stack>
   );
 }

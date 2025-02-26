@@ -126,8 +126,8 @@ function useConversationHistory() {
         currentConversationReference.current = newConversation;
 
         if (configuration && applicationModelsList && updatedMessages[0]) {
-          const generalModel = applicationModelsList.models[configuration.system].models.find(
-            (model) => model.tasks.includes('general'),
+          const generalModel = applicationModelsList[configuration.system].models.find((model) =>
+            model.tasks.includes('general'),
           );
           if (generalModel) {
             // Initialize the web worker
