@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: 'npm'
 
       - name: Extract version from tag
@@ -38,7 +38,7 @@ jobs:
             ${{ runner.os }}-node_modules-
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Upload package.json
         uses: actions/upload-artifact@v4
@@ -62,11 +62,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build and publish Windows
         env:
@@ -89,11 +89,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build and publish macOS
         env:

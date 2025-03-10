@@ -40,3 +40,5 @@ appImage:
 npmRebuild: false
 publish:
   provider: github
+  releaseType: release
+  draft: false
