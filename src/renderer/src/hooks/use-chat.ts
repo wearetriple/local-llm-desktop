@@ -59,6 +59,7 @@ export function useChat() {
   const [streamingMessage, setStreamingMessage] = useState<boolean>(false);
   const { activePersona } = PersonasContainer.useContainer();
   const [selectedModel, setSelectedModel] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
   const streamBuffer = useRef<string>('');
   const { selectedSets: selectedKnowledgeSets } = KnowledgeContainer.useContainer();
 
@@ -66,63 +67,74 @@ export function useChat() {
   selectedModelReference.current = selectedModel;
 
   async function sendMessage(message: string) {
-    setStreamingMessage(true);
-    streamBuffer.current = '';
+    try {
+      setError(null);
+      setStreamingMessage(true);
+      streamBuffer.current = '';
 
-    const newMessage: Message = { role: 'user', content: message, when: new Date() };
-    setMessages((previous) => [...previous, newMessage]);
+      const newMessage: Message = { role: 'user', content: message, when: new Date() };
+      setMessages((previous) => [...previous, newMessage]);
 
-    const messagesToSend = [
-      ...messages.map((message) => ({ role: message.role, content: message.content })),
-      { role: 'user', content: message },
-    ];
-
-    const { response, documents } = await requestReply(
-      selectedModelReference.current,
-      activePersona
-        ? [{ role: 'system', content: activePersona.prompt }, ...messagesToSend]
-        : messagesToSend,
-      selectedKnowledgeSets,
-    );
-
-    let firstStreamInput = true;
-    for await (const part of response) {
-      if (firstStreamInput) {
-        setMessages((previous) => [
-          ...previous,
-          {
-            role: 'assistant',
-            content: part.message.content,
-            streaming: true,
-            when: new Date(part.created_at),
-            documentsUsed: documents.map((document) => ({
-              knowledgeSetId: document.knowledgeSetId,
-              file: document.file,
-            })),
-          },
-        ]);
-        streamBuffer.current = part.message.content;
-        firstStreamInput = false;
-        continue;
+      if (!selectedModelReference.current) {
+        throw new Error('Please select a model before sending a message');
       }
 
-      streamBuffer.current += part.message.content;
-      setMessages((previous) =>
-        previous.map((message, index) =>
-          index === previous.length - 1
-            ? {
-                ...message,
-                content: streamBuffer.current,
-                streaming: !part.done,
-              }
-            : message,
-        ),
+      const messagesToSend = [
+        ...messages.map((message) => ({ role: message.role, content: message.content })),
+        { role: 'user', content: message },
+      ];
+
+      const { response, documents } = await requestReply(
+        selectedModelReference.current,
+        activePersona
+          ? [{ role: 'system', content: activePersona.prompt }, ...messagesToSend]
+          : messagesToSend,
+        selectedKnowledgeSets,
       );
 
-      if (part.done) {
-        setStreamingMessage(false);
-        streamBuffer.current = '';
+      let firstStreamInput = true;
+      for await (const part of response) {
+        if (firstStreamInput) {
+          setMessages((previous) => [
+            ...previous,
+            {
+              role: 'assistant',
+              content: part.message.content,
+              streaming: true,
+              when: new Date(part.created_at),
+              documentsUsed: documents.map((document) => ({
+                knowledgeSetId: document.knowledgeSetId,
+                file: document.file,
+              })),
+            },
+          ]);
+          streamBuffer.current = part.message.content;
+          firstStreamInput = false;
+          continue;
+        }
+
+        streamBuffer.current += part.message.content;
+        setMessages((previous) =>
+          previous.map((message, index) =>
+            index === previous.length - 1
+              ? {
+                  ...message,
+                  content: streamBuffer.current,
+                  streaming: !part.done,
+                }
+              : message,
+          ),
+        );
+
+        if (part.done) {
+          setStreamingMessage(false);
+          streamBuffer.current = '';
+        }
       }
+    } catch (error_) {
+      setError(error_ instanceof Error ? error_.message : 'An unexpected error occurred');
+      setStreamingMessage(false);
+      streamBuffer.current = '';
     }
   }
 
@@ -134,5 +146,7 @@ export function useChat() {
     streamingMessage,
     selectedModel,
     setSelectedModel,
+    error,
+    clearError: () => setError(null),
   };
 }
