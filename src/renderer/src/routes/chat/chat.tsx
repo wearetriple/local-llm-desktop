@@ -11,8 +11,9 @@ import {
   Text,
   Group,
   NativeSelect,
+  Alert,
 } from '@mantine/core';
-import { IconSend2 } from '@tabler/icons-react';
+import { IconSend2, IconX } from '@tabler/icons-react';
 import { useChat } from '@renderer/hooks/use-chat';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -28,7 +29,15 @@ import type { KnowledgeSet } from '@shared/api-ipc/knowledge';
 import { KnowledgeSources } from '@renderer/components/organisms/knowledge-sources/knowledge-sources';
 
 export default function Chat() {
-  const { messages, sendMessage, typingEnabled, setSelectedModel, selectedModel } = useChat();
+  const {
+    messages,
+    sendMessage,
+    typingEnabled,
+    setSelectedModel,
+    selectedModel,
+    error,
+    clearError,
+  } = useChat();
   const { configuration, models: applicationModelsList } = ConfigurationContainer.useContainer();
   const { models } = OllamaContainer.useContainer();
   const { activePersona } = PersonasContainer.useContainer();
@@ -90,10 +99,10 @@ export default function Chat() {
     }
   }, [taskOptions, selectedModel]);
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    if (inputValue.trim() && typingEnabled) {
-      await sendMessage(inputValue);
+    if (typingEnabled && inputValue.trim()) {
+      void sendMessage(inputValue);
       setInputValue('');
     }
   };
@@ -187,12 +196,28 @@ export default function Chat() {
         }}
       >
         <Stack gap="xs">
+          {error && (
+            <Alert
+              color="red"
+              title="Error"
+              withCloseButton
+              onClose={clearError}
+              icon={<IconX size={16} />}
+            >
+              {error}
+            </Alert>
+          )}
           <form onSubmit={handleSubmit}>
             <Group gap="sm" align="center">
               {activePersona && <NameAvatar name={activePersona.name} />}
               <TextInput
                 value={inputValue}
-                onChange={(event) => setInputValue(event.currentTarget.value)}
+                onChange={(event) => {
+                  setInputValue(event.currentTarget.value);
+                  if (error) {
+                    clearError();
+                  }
+                }}
                 placeholder="Type a message..."
                 style={{ flex: 1 }}
                 rightSection={
