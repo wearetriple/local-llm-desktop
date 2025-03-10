@@ -1,20 +1,36 @@
 # Local LLM Desktop
 
-A desktop application that wraps the Ollama API and offers a secure, privacy-friendly local chat interface. Built with Electron and React, this application allows you to interact with various Large Language Models (LLMs) directly on your machine without sending data to external servers.
+A desktop application that wraps the Ollama API and offers a secure, privacy-friendly local chat interface.
+Built with Electron and React, this application allows you to interact with various Large Language Models (LLMs)
+directly on your machine without sending data to external servers.
 
 ## Features
 
 - 🤖 Local LLM Integration with Ollama
 - 🔒 Privacy-focused - all data stays on your machine
+- 🔍 Use local files as additional input
+- 🧍 Personas for different characters and behavior for the conversation
 - 💬 Modern chat interface
 - 📱 Cross-platform support (Windows, macOS)
-- 🔄 Automatic updates via electron-updater
-- 📝 Markdown support for chat messages
-- 🔍 Vector search capabilities
 
 ## Getting Started
 
-Download and install the application.
+Download and install the application from the [releases](https://github.com/wearetriple/local-llm-desktop/releases) page.
+The application is currently not signed, so you will receive security warnings when installing:
+
+- On Windows: You'll see a "Windows protected your PC" message. Click "More info" and then "Run anyway" to proceed with installation.
+- On macOS: You'll get a message that the app "cannot be opened because the developer cannot be verified". To bypass this, right-click (or Control-click) the app in Finder and select "Open". Click "Open" in the dialog that appears.
+
+## Feedback
+
+All feedback is welcome! Create an [issue](https://github.com/wearetriple/local-llm-desktop/issues) and share your positive or
+negative remarks.
+
+## Sponsoring
+
+Development of this project is proudly supported by:
+
+[Triple](https://www.wearetriple.com), part of Hypersolid.
 
 # Development
 
