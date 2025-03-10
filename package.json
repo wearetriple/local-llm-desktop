@@ -1,10 +1,17 @@
 {
   "name": "local-llm-desktop",
   "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
+  "description": "A desktop application that wraps the ollama API and offers a secure, privacy friendly local chat interface.",
+  "private": true,
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "dzonneveld",
+  "homepage": "https://github.com/wearetriple/local-llm-desktop",
+  "bugs": "https://github.com/wearetriple/local-llm-desktop/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wearetriple/local-llm-desktop.git"
+  },
   "scripts": {
     "lint": "concurrently --kill-others-on-fail \"npm:lint:*\"",
     "lint:prettier": "prettier --check --log-level=warn src",
@@ -43,10 +50,7 @@
     "@mantine/core": "^7.15.3",
     "@mantine/form": "^7.16.1",
     "@mantine/hooks": "^7.15.3",
-    "@minchat/react-chat-ui": "^0.16.2",
     "@sentry/electron": "^6.1.0",
-    "@sentry/vite-plugin": "^3.2.1",
-    "@tabler/icons-react": "^3.28.1",
     "@themaximalist/vectordb.js": "^0.1.2",
     "client-vector-search": "^0.2.0",
     "date-fns": "^4.1.0",
@@ -54,8 +58,6 @@
     "officeparser": "^5.1.1",
     "ollama": "^0.5.11",
     "pretty-bytes": "^6.1.1",
-    "react-markdown": "^9.0.3",
-    "react-router-dom": "^7.1.1",
     "remark-gfm": "^4.0.0",
     "shelljs": "^0.8.5",
     "systeminformation": "^5.25.11",
@@ -72,6 +74,8 @@
     "@types/react-dom": "^18.3.0",
     "@types/shelljs": "^0.8.15",
     "@vitejs/plugin-react": "^4.3.1",
+    "@sentry/vite-plugin": "^3.2.1",
+    "@tabler/icons-react": "^3.28.1",
     "concurrently": "^9.1.2",
     "electron": "^34.0.1",
     "electron-builder": "^24.13.3",
@@ -87,6 +91,8 @@
     "prettier": "^3.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.3",
+    "react-router-dom": "^7.1.1",
     "typescript": "^5.5.2",
     "vite": "^5.3.1"
   }
