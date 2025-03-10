@@ -32,4 +32,5 @@ export type ModelsList = z.infer<typeof ModelsListSchema>;
 export type SystemModels = z.infer<typeof SystemModelsSchema>;
 export type Model = z.infer<typeof ModelSchema>;
 
-export const MODELS_URL = 'https://pub-89541a66a6c54286b396734e7d3a5b36.r2.dev/models.json';
+export const MODELS_URL =
+  'https://raw.githubusercontent.com/wearetriple/local-llm-desktop/refs/heads/main/src/main/api-ipc/models/fallback.json';

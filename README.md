@@ -7,7 +7,7 @@ A desktop application that wraps the Ollama API and offers a secure, privacy-fri
 - 🤖 Local LLM Integration with Ollama
 - 🔒 Privacy-focused - all data stays on your machine
 - 💬 Modern chat interface
-- 📱 Cross-platform support (Windows, macOS, Linux)
+- 📱 Cross-platform support (Windows, macOS)
 - 🔄 Automatic updates via electron-updater
 - 📝 Markdown support for chat messages
 - 🔍 Vector search capabilities

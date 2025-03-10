@@ -1,0 +1,101 @@
+name: Publish Electron App
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    if: startsWith(github.event.release.tag_name, 'v') # Only trigger if tag starts with "v"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Update package.json version
+        run: |
+          jq --arg version "$VERSION" '.version=$version' package.json > temp.json && mv temp.json package.json
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node_modules-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Upload package.json
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-json
+          path: package.json
+
+  build-windows:
+    needs: publish
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download updated package.json
+        uses: actions/download-artifact@v4
+        with:
+          name: package-json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and publish Windows
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build:win
+
+  build-mac:
+    needs: publish
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download updated package.json
+        uses: actions/download-artifact@v4
+        with:
+          name: package-json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and publish macOS
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build:mac
