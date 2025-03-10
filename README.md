@@ -15,8 +15,10 @@ directly on your machine without sending data to external servers.
 
 ## Getting Started
 
-Download and install the application from the [releases](https://github.com/wearetriple/local-llm-desktop/releases) page.
-The application is currently not signed, so you will receive security warnings when installing:
+Download and install the application from the [releases page](https://github.com/wearetriple/local-llm-desktop/releases) page.
+Pick the correct file for your system.
+
+The application is currently not digitally signed, so you will receive security warnings when installing:
 
 - On Windows: You'll see a "Windows protected your PC" message. Click "More info" and then "Run anyway" to proceed with installation.
 - On macOS: You'll get a message that the app "cannot be opened because the developer cannot be verified". To bypass this, right-click (or Control-click) the app in Finder and select "Open". Click "Open" in the dialog that appears.
